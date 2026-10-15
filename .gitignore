@@ -1,0 +1,40 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Database Dumps & Local Data
+*.dump
+*.tar
+*.bak
+*.sql.bak
+pgdata/
+data/
+
+# Environment & Sensitive Information
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Logs & Temporary Files
+*.log
+logs/
+temp/
+tmp/
+*.tmp
+
+# System-generated / Agent Artifacts
+.gemini/
+.system_generated/

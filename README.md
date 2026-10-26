@@ -72,9 +72,7 @@ psql -d hospital_db -f run_all.sql
 | **Object-Relational** | Composite Types, Table Inheritance, Array, Methods |
 | **Transaction Testing** | 3 kịch bản: success, rollback, concurrency (2 phiên) |
 
-## 👥 Thành viên
-
-- *(Thêm tên thành viên nhóm)*
+## 👥 Tác giả: Huỳnh Tuấn Kiệt
 
 ## 📚 Tài liệu tham khảo
 

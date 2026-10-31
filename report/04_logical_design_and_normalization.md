@@ -138,5 +138,96 @@ PD \rightarrow K
 
 ---
 
-*(Nội dung Tuần 5: Phân tích 3NF/BCNF, Chứng minh Nối không mất mát thông tin, Bảo toàn phụ thuộc hàm và Phân tích 4NF sẽ được hoàn thiện tiếp tục tại các mục 4.5 – 4.8).*
+## 4.5. Phân tích và Chứng minh Chuẩn hóa 3NF và BCNF
+
+### 4.5.1. Tiêu chuẩn đánh giá 3NF và BCNF
+- **Dạng chuẩn 3 (3NF)**: Mọi FD $X \rightarrow A \in F^+$ đều thỏa mãn: $X$ là siêu khóa HOẶC $A$ là thuộc tính khóa.
+- **Dạng chuẩn Boyce-Codd (BCNF)**: Mọi FD $X \rightarrow A \in F^+$ đều bắt buộc $X$ phải là siêu khóa.
+
+### 4.5.2. Phân tích vi phạm và Phân rã đạt BCNF
+Xét phân hệ Kết quả xét nghiệm gộp ban đầu $R_{\text{KQ\_Gop}}(K, P, D, T, V, U, N, X, W, S)$ với tập khóa $\mathcal{K} = \{\{K\}, \{PD\}\}$:
+- **Phát hiện vi phạm**:
+  Xét phụ thuộc hàm $f_2: D \rightarrow \{U, N, X\}$ ($\text{ma\_danh\_muc\_xn} \rightarrow \{\text{don\_vi\_tinh}, \text{min}, \text{max}\}$):
+  1. $\{D\}^+ = \{D, U, N, X\} \neq U \Rightarrow D$ **không phải là siêu khóa**.
+  2. $\{U, N, X\}$ đều là các thuộc tính không khóa.
+  $\Rightarrow f_2$ vi phạm đồng thời cả 3NF (phụ thuộc bắc cầu: $K \rightarrow D \rightarrow \{U, N, X\}$) và BCNF.
+- **Thực hiện thuật toán phân rã BCNF**:
+  - $R_1 = D^+ = \{D, U, N, X\} \equiv \text{DanhMucXetNghiem}(\underline{\text{ma\_danh\_muc\_xn}}, \text{don\_vi\_tinh}, \text{chi\_so\_min}, \text{chi\_so\_max})$.
+  - $R_2 = (U \setminus \{U, N, X\}) \cup \{D\} = \{K, P, D, T, V, W, S\} \equiv \text{KetQuaDinhLuong}(\underline{\text{ma\_ket\_qua}}, \text{ma\_phieu\_chi\_dinh}, \text{ma\_danh\_muc\_xn}, \dots)$.
+- **Đánh giá dạng chuẩn sau phân rã**:
+  - Trong $R_1$: $D$ là khóa chính $\Rightarrow R_1$ đạt chuẩn BCNF.
+  - Trong $R_2$: $K$ và $PD$ là các siêu khóa $\Rightarrow R_2$ đạt chuẩn BCNF.
+
+---
+
+## 4.6. Chứng minh Tính Nối Không Mất Mát Thông Tin & Bảo Toàn Phụ Thuộc
+
+### 4.6.1. Chứng minh Nối không mất mát thông tin (Lossless Join)
+Theo Định lý Heath, phép phân rã $\rho = \{R_1, R_2\}$ là nối không mất mát thông tin đối với $F$ nếu $(R_1 \cap R_2) \rightarrow (R_1 \setminus R_2) \in F^+$ hoặc $(R_1 \cap R_2) \rightarrow (R_2 \setminus R_1) \in F^+$.
+- $R_1 \cap R_2 = \{D\} = \{\text{ma\_danh\_muc\_xn}\}$.
+- $R_1 \setminus R_2 = \{U, N, X\} = \{\text{don\_vi\_tinh}, \text{chi\_so\_min}, \text{chi\_so\_max}\}$.
+- Ta có $D \rightarrow \{U, N, X\}$ chính là $f_2 \in F$.
+- Do đó $(R_1 \cap R_2) \rightarrow (R_1 \setminus R_2) \in F^+$ thỏa mãn.
+$$\Rightarrow \mathbf{Phép\ phân\ rã\ \rho = \{R_1, R_2\}\ đảm\ bảo\ TÍNH\ NỐI\ KHÔNG\ MẤT\ MÁT\ THÔNG\ TIN\ (Lossless\ Join).}$$
+
+### 4.6.2. Chứng minh Bảo toàn Phụ thuộc hàm (Dependency Preservation)
+- Chiếu của $F$ lên $R_1$: $\pi_{R_1}(F) = \{D \rightarrow \{U, N, X\}\}$.
+- Chiếu của $F$ lên $R_2$: $\pi_{R_2}(F) = \{K \rightarrow \{P, D, T, V, W, S\}, PD \rightarrow K\}$.
+- Hợp hai tập chiếu:
+  $$F' = \pi_{R_1}(F) \cup \pi_{R_2}(F) \equiv F_{\min} \equiv F$$
+- Toàn bộ các phụ thuộc hàm đều được kiểm tra trực tiếp trên các lược đồ con mà không cần nối bảng.
+$$\Rightarrow \mathbf{Phép\ phân\ rã\ BẢO\ TOÀN\ HOÀN\ TOÀN\ HỆ\ PHỤ\ THUỘC\ HÀM\ (Dependency\ Preservation).}$$
+
+---
+
+## 4.7. Phân tích Dạng chuẩn 4 (4NF - Multivalued Dependencies)
+
+### 4.7.1. Định nghĩa Dạng chuẩn 4 (4NF)
+Một lược đồ quan hệ $R$ đạt 4NF đối với tập phụ thuộc đa trị $D$ nếu với mọi phụ thuộc đa trị không tầm thường $X \twoheadrightarrow Y \in D^+$, thì $X$ bắt buộc phải là một siêu khóa của $R$.
+
+### 4.7.2. Phân tích bài toán MVD trong Y tế
+Xét quan hệ phân công bác sĩ nếu gộp chung:
+$$R_{\text{PhanCong}}(\text{ma\_bac\_si}, \text{chung\_chi\_chuyen\_mon}, \text{phong\_kham\_phu\_trach})$$
+Do năng lực chứng chỉ và lịch trực phòng khám là hai tập thông tin hoàn toàn độc lập, ta có hai phụ thuộc đa trị:
+$$\text{ma\_bac\_si} \twoheadrightarrow \text{chung\_chi\_chuyen\_mon} \quad \text{và} \quad \text{ma\_bac\_si} \twoheadrightarrow \text{phong\_kham\_phu\_trach}$$
+Tuy nhiên, khóa của bảng là cả 3 thuộc tính $\Rightarrow \text{ma\_bac\_si}$ không phải siêu khóa $\rightarrow$ Vi phạm 4NF!
+
+**Giải pháp trong đồ án**:
+Hệ thống phân rã thành hai quan hệ độc lập: quan hệ chứng chỉ chuyên môn gắn vào thực thể `BacSi`, và quan hệ phân công/khám bệnh gắn vào `HoSoKhamBenh`. Thuộc tính đa trị `so_dien_thoai` được đóng gói dạng kiểu mảng nguyên tử `TEXT[]` của PostgreSQL.
+$\Rightarrow$ **Toàn bộ các bảng trong CSDL đều thỏa mãn Dạng chuẩn 4 (4NF).**
+
+---
+
+## 4.8. Lược đồ Quan hệ Hoàn chỉnh (Relational Schema)
+
+Hệ thống sau khi chuẩn hóa bao gồm 18 lược đồ quan hệ đạt chuẩn BCNF và 4NF:
+
+```mermaid
+erDiagram
+    NGUOI ||--o| BENH_NHAN : "ma_dinh_danh"
+    NGUOI ||--o| NHAN_VIEN_Y_TE : "ma_dinh_danh"
+    KHOA_PHONG ||--o{ NHAN_VIEN_Y_TE : "ma_khoa_phong"
+    NHAN_VIEN_Y_TE ||--o| BAC_SI : "ma_nhan_vien"
+    NHAN_VIEN_Y_TE ||--o| KY_THUAT_VIEN : "ma_nhan_vien"
+    NHAN_VIEN_Y_TE ||--o| NHAN_VIEN_TIEP_NHAN : "ma_nhan_vien"
+    BENH_NHAN ||--o{ HO_SO_KHAM_BENH : "ma_benh_nhan"
+    BAC_SI ||--o{ HO_SO_KHAM_BENH : "ma_bac_si_kham"
+    KHOA_PHONG ||--o{ HO_SO_KHAM_BENH : "ma_phong_kham"
+    HO_SO_KHAM_BENH ||--o| DON_THUOC : "ma_ho_so"
+    BAC_SI ||--o{ DON_THUOC : "ma_bac_si_ke"
+    DON_THUOC ||--|{ CHI_TIET_DON_THUOC : "ma_don_thuoc"
+    THUOC ||--o{ CHI_TIET_DON_THUOC : "ma_thuoc"
+    HO_SO_KHAM_BENH ||--o{ PHIEU_CHI_DINH_XET_NGHIEM : "ma_ho_so"
+    BAC_SI ||--o{ PHIEU_CHI_DINH_XET_NGHIEM : "ma_bac_si_chi_dinh"
+    PHIEU_CHI_DINH_XET_NGHIEM ||--|{ KET_QUA_XET_NGHIEM : "ma_phieu_chi_dinh"
+    DANH_MUC_XET_NGHIEM ||--o{ KET_QUA_XET_NGHIEM : "ma_danh_muc_xn"
+    KY_THUAT_VIEN ||--o{ KET_QUA_XET_NGHIEM : "ma_ktv_thuc_hien"
+    KET_QUA_XET_NGHIEM ||--o| KET_QUA_DINH_LUONG : "ma_ket_qua"
+    KET_QUA_XET_NGHIEM ||--o| KET_QUA_HINH_ANH : "ma_ket_qua"
+    KET_QUA_XET_NGHIEM ||--o| KET_QUA_DINH_TINH : "ma_ket_qua"
+    NHAN_VIEN_Y_TE ||--o{ LICH_SU_CHINH_SUA : "nguoi_thuc_hien"
+```
+
+> [!NOTE]
+> Toàn bộ các quan hệ trên đã bảo toàn 100% phụ thuộc hàm, không có mất mát thông tin và đã sẵn sàng để chuyển giao sang **Giai đoạn 3: Hiện thực hóa DDL & SQL Nâng cao (Tuần 6–8)**.
 

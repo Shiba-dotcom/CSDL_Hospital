@@ -22,3 +22,4 @@ services:
 volumes:
   hospital_pgdata:
     name: hospital_pgdata
+

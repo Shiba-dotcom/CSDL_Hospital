@@ -72,3 +72,4 @@ ON lich_su_chinh_sua USING GIN (du_lieu_moi);
 -- Chỉ mục tìm kiếm theo bảng và bản ghi bị sửa đổi
 CREATE INDEX IF NOT EXISTS idx_audit_lookup 
 ON lich_su_chinh_sua (ten_bang, ma_ban_ghi, thoi_gian_sua DESC);
+

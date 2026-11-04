@@ -275,3 +275,4 @@ CREATE TABLE IF NOT EXISTS lich_su_chinh_sua (
         FOREIGN KEY (nguoi_thuc_hien) REFERENCES nhan_vien_y_te(ma_nhan_vien) 
         ON DELETE RESTRICT ON UPDATE CASCADE
 );
+

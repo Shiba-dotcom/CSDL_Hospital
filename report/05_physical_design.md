@@ -130,3 +130,4 @@ Hệ thống đã triển khai thành công bộ dữ liệu mẫu quy mô lớn
 | `lich_su_chinh_sua` | 3 | Vết kích hoạt tự động | Đạt |
 
 > Toàn bộ cơ sở dữ liệu đã sẵn sàng trên container Docker `hospital_db_container` (cổng `5433`), hoạt động ổn định và sẵn sàng cho việc xây dựng **10–12 Truy vấn SQL Nâng cao ở Tuần 7–8**.
+

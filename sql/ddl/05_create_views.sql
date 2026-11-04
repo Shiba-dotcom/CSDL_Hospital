@@ -123,3 +123,4 @@ FROM lich_su_chinh_sua ls
 JOIN nhan_vien_y_te nv ON ls.nguoi_thuc_hien = nv.ma_nhan_vien
 JOIN nguoi n ON nv.ma_dinh_danh = n.ma_dinh_danh
 ORDER BY ls.thoi_gian_sua DESC;
+

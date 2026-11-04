@@ -293,6 +293,62 @@ SELECT
 FROM phieu_chi_dinh_xet_nghiem p
 WHERE p.ma_phieu_chi_dinh <= 150;
 
+-- B1. Bổ sung các xét nghiệm sinh hóa chuyên sâu (Creatinine, Cholesterol, Triglycerid)
+-- Đảm bảo có bác sĩ chỉ định đủ toàn bộ danh mục Sinh Hóa phục vụ truy vấn Phép chia quan hệ (Q6)
+INSERT INTO ket_qua_dinh_luong (
+    ma_phieu_chi_dinh, ma_danh_muc_xn, ma_ktv_thuc_hien,
+    thoi_gian_tiep_nhan_mau, thoi_gian_co_ket_qua, trang_thai_ket_qua,
+    ket_luan_tong_quat, so_phien_ban, is_deleted,
+    gia_tri_do, don_vi_tinh, chi_so_min_chuan, chi_so_max_chuan, muc_do_canh_bao
+)
+SELECT 
+    p.ma_phieu_chi_dinh,
+    'CREATININE',
+    'NV-00004',
+    p.thoi_gian_chi_dinh + INTERVAL '15 minutes',
+    p.thoi_gian_chi_dinh + INTERVAL '45 minutes',
+    'CHINH_THUC',
+    'Chức năng thận trong giới hạn bình thường',
+    1, FALSE, 78.500, 'umol/L', 53.000, 106.000, 'BINH_THUONG'::canh_bao_enum
+FROM phieu_chi_dinh_xet_nghiem p
+WHERE p.ma_bac_si_chi_dinh = 'NV-00001' LIMIT 20;
+
+INSERT INTO ket_qua_dinh_luong (
+    ma_phieu_chi_dinh, ma_danh_muc_xn, ma_ktv_thuc_hien,
+    thoi_gian_tiep_nhan_mau, thoi_gian_co_ket_qua, trang_thai_ket_qua,
+    ket_luan_tong_quat, so_phien_ban, is_deleted,
+    gia_tri_do, don_vi_tinh, chi_so_min_chuan, chi_so_max_chuan, muc_do_canh_bao
+)
+SELECT 
+    p.ma_phieu_chi_dinh,
+    'CHOLESTEROL',
+    'NV-00004',
+    p.thoi_gian_chi_dinh + INTERVAL '15 minutes',
+    p.thoi_gian_chi_dinh + INTERVAL '45 minutes',
+    'CHINH_THUC',
+    'Chỉ số mỡ máu toàn phần ổn định',
+    1, FALSE, 4.600, 'mmol/L', 3.600, 5.200, 'BINH_THUONG'::canh_bao_enum
+FROM phieu_chi_dinh_xet_nghiem p
+WHERE p.ma_bac_si_chi_dinh = 'NV-00001' LIMIT 20;
+
+INSERT INTO ket_qua_dinh_luong (
+    ma_phieu_chi_dinh, ma_danh_muc_xn, ma_ktv_thuc_hien,
+    thoi_gian_tiep_nhan_mau, thoi_gian_co_ket_qua, trang_thai_ket_qua,
+    ket_luan_tong_quat, so_phien_ban, is_deleted,
+    gia_tri_do, don_vi_tinh, chi_so_min_chuan, chi_so_max_chuan, muc_do_canh_bao
+)
+SELECT 
+    p.ma_phieu_chi_dinh,
+    'TRIGLYCERID',
+    'NV-00004',
+    p.thoi_gian_chi_dinh + INTERVAL '15 minutes',
+    p.thoi_gian_chi_dinh + INTERVAL '45 minutes',
+    'CHINH_THUC',
+    'Triglyceride trong giới hạn cho phép',
+    1, FALSE, 1.350, 'mmol/L', 0.400, 1.700, 'BINH_THUONG'::canh_bao_enum
+FROM phieu_chi_dinh_xet_nghiem p
+WHERE p.ma_bac_si_chi_dinh = 'NV-00001' LIMIT 20;
+
 -- C. Chẩn đoán Hình ảnh: X-QUANG NGỰC (120 kết quả)
 INSERT INTO ket_qua_hinh_anh (
     ma_phieu_chi_dinh, ma_danh_muc_xn, ma_ktv_thuc_hien,
@@ -383,3 +439,4 @@ CALL sp_cap_nhat_ket_qua_dinh_luong(2, 5.100, 'NV-00004', 'Kỹ thuật viên đ
 CALL sp_cap_nhat_ket_qua_dinh_luong(5, 7.800, 'NV-00004', 'Đính chính kết quả sau khi pha loãng mẫu bệnh phẩm', 1);
 
 COMMIT;
+

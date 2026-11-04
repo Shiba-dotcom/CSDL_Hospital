@@ -1,0 +1,24 @@
+services:
+  hospital_db:
+    image: postgres:16-alpine
+    container_name: hospital_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: hospital_db
+    ports:
+      # Ánh xạ sang cổng 5433 trên máy host để tránh xung đột với cổng 5432 hiện có
+      - "5433:5432"
+    volumes:
+      - hospital_pgdata:/var/lib/postgresql/data
+      - ./:/workspace
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hospital_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hospital_pgdata:
+    name: hospital_pgdata

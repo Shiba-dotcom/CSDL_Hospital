@@ -104,3 +104,4 @@ CREATE TABLE oop.ho_so_kham_benh (
     chan_doan           TEXT,
     cac_ma_xet_nghiem   VARCHAR(15)[]             -- Mảng mã xét nghiệm (Collection)
 );
+

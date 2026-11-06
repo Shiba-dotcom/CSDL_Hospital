@@ -158,3 +158,4 @@ SELECT
 FROM oop.ho_so_kham_benh hs
 JOIN oop.benh_nhan bn ON hs.ma_benh_nhan = bn.ma_benh_nhan
 JOIN oop.bac_si bs ON hs.ma_bac_si_kham = bs.ma_bac_si;
+

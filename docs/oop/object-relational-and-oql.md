@@ -379,3 +379,4 @@ JOIN oop.bac_si bs ON hs.ma_bac_si_kham = bs.ma_bac_si;
 | **Đóng gói hành vi** | Tách rời dữ liệu và Stored Procedures | Đóng gói phương thức (Methods) trực tiếp vào lớp | Phương thức thành viên dạng hàm gắn liền kiểu dữ liệu (`Table-Row Methods`) |
 | **Ngôn ngữ truy vấn** | SQL chuẩn (Declarative) | OQL (Object Query Language) theo chuẩn ODMG | SQL mở rộng (hỗ trợ dot notation, gọi method, bóc tách mảng `UNNEST`) |
 | **Hệ sinh thái & Ứng dụng** | Phổ biến nhất thế giới, giao dịch ACID tối ưu | Thị trường hẹp, khó chuẩn hóa giữa các nhà cung cấp | **Lựa chọn tối ưu:** Giữ trọn sức mạnh ACID của SQL vừa linh hoạt mô hình hóa các thực thể y tế phức tạp |
+

@@ -37,3 +37,4 @@ CREATE TYPE oop.bang_cap_type AS (
     noi_dao_tao         VARCHAR(150),   -- 'ĐH Y Dược TP.HCM', 'ĐH Y Hà Nội'
     nam_tot_nghiep      INTEGER
 );
+

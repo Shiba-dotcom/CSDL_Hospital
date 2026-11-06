@@ -162,3 +162,4 @@ INSERT INTO oop.ho_so_kham_benh (
     'Viêm dạ dày trào ngược - Chỉ định kiểm tra vi khuẩn HP',
     ARRAY['HP_TEST']
 );
+

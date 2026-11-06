@@ -183,3 +183,4 @@ Hệ thống Cơ sở dữ liệu Hướng đối tượng (ORDBMS) đã đượ
 3. **Phương thức thành viên:** 7 Methods đóng gói xử lý nghiệp vụ y tế.
 4. **Truy vấn OQL:** 6 câu truy vấn OQL chuẩn ODMG 3.0 kèm ánh xạ tương đương sang SQL, kiểm thử thành công 100% trên CSDL thực tế.
 5. **Điểm số chuẩn đầu ra:** Đáp ứng hoàn hảo toàn bộ tiêu chí để đạt điểm tối đa **1.5 / 1.5 điểm** cho Chuẩn đầu ra 4.
+

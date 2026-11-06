@@ -162,3 +162,4 @@ FROM ONLY ket_qua_xet_nghiem;
 RESET enable_seqscan;
 RESET enable_indexscan;
 RESET enable_bitmapscan;
+

@@ -73,3 +73,4 @@ Kết quả chạy script kiểm thử độc lập [verify_end_to_end.sql](file
    - Số dòng thuốc mồ côi đơn thuốc: **0**.
 3. **An toàn dữ liệu:**
    - 11/11 Triggers hoạt động chính xác (tự động tính BMI, ghi nhận Audit Trail, ngăn chặn hard delete, và hệ thống CDSS cảnh báo dị ứng thuốc).
+

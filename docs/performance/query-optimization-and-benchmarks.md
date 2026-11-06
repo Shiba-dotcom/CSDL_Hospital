@@ -112,3 +112,4 @@ xychart-beta
     bar [0.09, 0.04, 0.08]
 ```
 *(Thanh thứ nhất: Quét tuần tự (Seq Scan) | Thanh thứ hai: Đã tối ưu bằng Index)*
+

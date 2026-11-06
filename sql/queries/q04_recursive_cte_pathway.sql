@@ -80,3 +80,4 @@ FROM patient_care_pathway
 WHERE cap_do_tai_kham >= 3
 ORDER BY 
     cap_do_tai_kham DESC, ma_benh_nhan;
+

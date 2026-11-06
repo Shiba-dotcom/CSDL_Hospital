@@ -61,3 +61,4 @@ SELECT
 FROM glucose_timeline
 ORDER BY 
     ma_benh_nhan, lan_do_thu ASC;
+

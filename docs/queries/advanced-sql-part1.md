@@ -128,3 +128,4 @@
 (1 row)
 ```
 *(Bác sĩ Trần Đình Khoa là bác sĩ duy nhất đã chỉ định trọn vẹn đủ 5 kỹ thuật Sinh Hóa: Glucose, Ure máu, Creatinine, Cholesterol và Triglycerid).*
+

@@ -35,3 +35,4 @@ HAVING
     COUNT(DISTINCT hs.ma_ho_so) >= 10
 ORDER BY 
     tong_so_luot_kham DESC;
+

@@ -45,3 +45,4 @@ WHERE (
     ) sub
 )
 ORDER BY so_lan_xet_nghiem_bat_thuong DESC;
+

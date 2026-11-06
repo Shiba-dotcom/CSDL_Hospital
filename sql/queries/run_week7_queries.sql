@@ -32,3 +32,4 @@
 \echo 'TRUY VẤN Q6: RELATIONAL DIVISION (DOUBLE NOT EXISTS) - BÁC SĨ CHỈ ĐỊNH ĐỦ SINH HÓA'
 \echo '======================================================================'
 \i sql/queries/q06_not_exists_set_division.sql
+

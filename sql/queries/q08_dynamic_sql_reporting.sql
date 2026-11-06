@@ -79,3 +79,16 @@ BEGIN
     RETURN QUERY EXECUTE v_sql;
 END;
 $$;
+
+-- ============================================================================
+-- CÂU LỆNH GỌI HÀM VÀ HIỂN THỊ BẢNG KẾT QUẢ RA MÀN HÌNH (RUN ĐOẠN NÀY):
+-- ============================================================================
+
+-- Test 1: Báo cáo gom nhóm theo BÁC SĨ (Bôi đen dòng này và bấm Ctrl + Enter)
+SELECT * FROM fn_thong_ke_kham_benh_dong ('BAC_SI');
+
+-- Test 2: Báo cáo gom nhóm theo KHOA PHÒNG
+SELECT * FROM fn_thong_ke_kham_benh_dong ('KHOA_PHONG');
+
+-- Test 3: Báo cáo gom nhóm theo THÁNG
+SELECT * FROM fn_thong_ke_kham_benh_dong ('THANG');

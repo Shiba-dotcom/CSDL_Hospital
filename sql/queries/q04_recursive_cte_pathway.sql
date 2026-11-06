@@ -6,7 +6,7 @@
 -- Kỹ thuật: WITH RECURSIVE kết hợp điều kiện dừng (Recursion Termination),
 --           phép ghép chuỗi đường dẫn (Path Construction) và tính tổng tích lũy.
 -- ============================================================================
-
+--
 WITH RECURSIVE 
 -- Bảng tạm đánh số thứ tự các lượt khám theo thời gian của từng bệnh nhân
 numbered_visits AS (
@@ -33,7 +33,6 @@ numbered_visits AS (
     JOIN nguoi n ON bn.ma_dinh_danh = n.ma_dinh_danh
     WHERE hs.is_deleted = FALSE
 ),
-
 -- ĐỆ QUY: Truy vết chuỗi khám bệnh từ đợt 1 -> đợt 2 -> đợt 3...
 patient_care_pathway AS (
     -- 1. ANCHOR MEMBER (Điểm neo ban đầu: Lượt khám đầu tiên visit_seq = 1)
@@ -48,9 +47,7 @@ patient_care_pathway AS (
         nv.chi_phi_dot_nay AS tong_chi_phi_luy_ke
     FROM numbered_visits nv
     WHERE nv.visit_seq = 1
-
     UNION ALL
-
     -- 2. RECURSIVE MEMBER (Đệ quy: Kết nối lượt khám thứ n với lượt khám thứ n + 1)
     SELECT 
         next_v.ma_benh_nhan,
@@ -66,18 +63,22 @@ patient_care_pathway AS (
       ON pcp.ma_benh_nhan = next_v.ma_benh_nhan 
      AND next_v.visit_seq = pcp.cap_do_tai_kham + 1
 )
-
--- Trích xuất các bệnh nhân có chuỗi theo dõi điều trị sâu nhất (từ 3 lần tái khám trở lên)
-SELECT 
-    ma_benh_nhan,
-    ten_benh_nhan,
-    cap_do_tai_kham AS tong_so_lan_kham,
-    chuoi_lo_trinh_kham,
-    thoi_gian_kham AS thoi_diem_kham_gan_nhat,
-    chan_doan_xac_dinh AS chan_doan_moi_nhat,
-    tong_chi_phi_luy_ke AS tong_tien_thuoc_luy_ke_vnd
-FROM patient_care_pathway
-WHERE cap_do_tai_kham >= 3
+-- Trích xuất các bệnh nhân có chuỗi theo dõi điều trị sâu nhất (chọn lộ trình dài nhất của mỗi người)
+SELECT *
+FROM (
+    SELECT DISTINCT ON (ma_benh_nhan)
+        ma_benh_nhan,
+        ten_benh_nhan,
+        cap_do_tai_kham AS tong_so_lan_kham,
+        chuoi_lo_trinh_kham,
+        thoi_gian_kham AS thoi_diem_kham_gan_nhat,
+        chan_doan_xac_dinh AS chan_doan_moi_nhat,
+        tong_chi_phi_luy_ke AS tong_tien_thuoc_luy_ke_vnd
+    FROM patient_care_pathway
+    WHERE cap_do_tai_kham >= 3
+    ORDER BY 
+        ma_benh_nhan, cap_do_tai_kham DESC
+) final_pathway
 ORDER BY 
-    cap_do_tai_kham DESC, ma_benh_nhan;
+    tong_so_lan_kham DESC, ma_benh_nhan;
 

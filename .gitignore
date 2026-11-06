@@ -13,6 +13,8 @@ $RECYCLE.BIN/
 *.swo
 *~
 
+QuaTrinhHoc.md
+
 # Database Dumps & Local Data
 *.dump
 *.tar

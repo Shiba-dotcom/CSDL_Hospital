@@ -89,11 +89,13 @@
 - **Kết quả thực thi mẫu:**
 
 ```
- ma_benh_nhan |  ten_benh_nhan  | tong_so_lan_kham |    chuoi_lo_trinh_kham    |  thoi_diem_kham_gan_nhat   |               chan_doan_moi_nhat                | tong_tien_thuoc_luy_ke_vnd 
---------------+-----------------+------------------+---------------------------+----------------------------+-------------------------------------------------+----------------------------
- BN-000001    | Trần Hữu Khoa   |                4 | HS-1 -> HS-61 -> HS-121   | 2026-08-24 05:52:26        | Tăng huyết áp độ 2 theo JNC VII - Rối loạn tiền |                 2484000.00
- BN-000002    | Lê Đức Quân     |                4 | HS-2 -> HS-62 -> HS-122   | 2026-08-25 09:40:26        | Viêm phế quản cấp bội nhiễm vi khuẩn            |                 1188000.00
- BN-000003    | Phạm Hữu Sơn    |                4 | HS-3 -> HS-63 -> HS-123   | 2026-08-26 13:28:26        | Cơn đau thắt ngực mạn tính do xơ vữa động mạch  |                 2484000.00
+ ma_benh_nhan |   ten_benh_nhan   | tong_so_lan_kham |                        chuoi_lo_trinh_kham                        |  thoi_diem_kham_gan_nhat   |                  chan_doan_moi_nhat                  | tong_tien_thuoc_luy_ke_vnd 
+--------------+-------------------+------------------+-------------------------------------------------------------------+----------------------------+------------------------------------------------------+----------------------------
+ BN-000001    | Trần Hữu Khoa     |                7 | HS-60 -> HS-120 -> HS-180 -> HS-240 -> HS-241 -> HS-242 -> HS-244 | 2026-11-06 06:40:22.988297 | Tăng huyết áp độ 1 - Kiểm soát tốt                   |                 1935000.00
+ BN-000002    | Lê Đức Quân       |                4 | HS-1 -> HS-61 -> HS-121 -> HS-181                                 | 2026-08-25 09:15:26.273349 | Viêm phế quản cấp bội nhiễm vi khuẩn                 |                  594000.00
+ BN-000003    | Phạm Minh Bình    |                4 | HS-2 -> HS-62 -> HS-122 -> HS-182                                 | 2026-08-26 13:03:26.273349 | Cơn đau thắt ngực mạn tính do xơ vữa động mạch       |                 1242000.00
+ BN-000004    | Hoàng Văn Linh    |                4 | HS-3 -> HS-63 -> HS-123 -> HS-183                                 | 2026-08-27 16:51:26.273349 | Đái tháo đường Typ 2 có biến chứng mạch máu nhỏ      |                  594000.00
+ BN-000005    | Huỳnh Hữu Sơn     |                4 | HS-4 -> HS-64 -> HS-124 -> HS-184                                 | 2026-08-29 04:39:26.273349 | Viêm dạ dày trợt nông có vi khuẩn H. Pylori (+)      |                 1242000.00
 ```
 
 ---

@@ -81,3 +81,4 @@ Toàn bộ 12 truy vấn đã được kiểm thử trực tiếp trên môi tr�
 1. **100% các câu lệnh** vượt qua các bài kiểm thử biên và kiểm thử tải trên tập dữ liệu mẫu chuẩn y tế.
 2. **Thời gian phản hồi:** Tất cả các truy vấn đều đạt hiệu năng tối ưu ($< 35\text{ms}$) nhờ hệ thống chỉ mục đa tầng (B-Tree, GIN index trên JSONB và mảng) đã thiết kế ở Chương 5.
 3. **Ý nghĩa thực tiễn:** 12 truy vấn đáp ứng hoàn hảo yêu cầu nghiệp vụ của một hệ thống Bệnh viện điện tử (HIS - Hospital Information System) và Bệnh án điện tử (EMR - Electronic Medical Record) chuẩn quốc gia.
+

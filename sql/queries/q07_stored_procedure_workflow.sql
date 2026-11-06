@@ -130,3 +130,39 @@ BEGIN
         p_ma_ho_so_out, p_ma_phieu_out, p_ma_don_out;
 END;
 $$;
+
+-- ============================================================================
+-- LỆNH THỰC THI (CALL PROCEDURE) VÀ XEM KẾT QUẢ VỪA TẠO:
+-- ============================================================================
+
+-- Bước 1: Gọi thủ tục để tạo 1 ca khám hoàn chỉnh (Bôi đen từ DO $$ đến END $$; và chạy):
+DO $$
+DECLARE
+    v_hs BIGINT;
+    v_phieu BIGINT;
+    v_don BIGINT;
+BEGIN
+    CALL sp_quy_trinh_kham_benh_toan_dien(
+        'BN-000001',
+        'NV-00001',
+        'P_101',
+        75, 36.8, 120, 80, 168.0, 65.0,
+        'Khám định kỳ theo dõi huyết áp và xét nghiệm mỡ máu',
+        'Tăng huyết áp độ 1 - Kiểm soát tốt',
+        'Tiếp tục duy trì phác đồ điều trị, tập thể dục nhẹ',
+        ARRAY['GLUCOSE', 'CHOLESTEROL', 'XQ_NGUC']::VARCHAR(15)[],
+        '[
+            {"ma_thuoc": "MED_AMLO5", "so_luong": 30, "lieu_dung": "1 viên", "so_lan": 1, "thoi_diem": "Sáng 8h", "so_ngay": 30},
+            {"ma_thuoc": "MED_PARA500", "so_luong": 10, "lieu_dung": "1 viên", "so_lan": 2, "thoi_diem": "Khi đau đầu", "so_ngay": 5}
+        ]'::JSONB,
+        v_hs, v_phieu, v_don
+    );
+END $$;
+
+-- Bước 2: Xem hồ sơ khám bệnh mới nhất vừa được tạo ra:
+SELECT ma_ho_so, ma_benh_nhan, ma_bac_si_kham, thoi_gian_kham, chan_doan_xac_dinh, chi_so_bmi
+FROM ho_so_kham_benh 
+ORDER BY ma_ho_so DESC 
+LIMIT 1;
+
+

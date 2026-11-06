@@ -7,7 +7,7 @@
 --           tìm kiếm trên kiểu mảng (ANY(so_dien_thoai)), và tổng hợp lịch sử khám.
 -- ============================================================================
 
-DROP FUNCTION IF EXISTS fn_tim_kiem_benh_nhan_nang_cao(TEXT, nhom_mau_enum, INT, INT);
+DROP FUNCTION IF EXISTS fn_tim_kiem_benh_nhan_nang_cao (TEXT, nhom_mau_enum, INT, INT);
 
 CREATE OR REPLACE FUNCTION fn_tim_kiem_benh_nhan_nang_cao(
     p_tu_khoa       TEXT DEFAULT NULL,
@@ -70,3 +70,15 @@ BEGIN
         tong_so_lan_kham DESC, n.ho_ten ASC;
 END;
 $$;
+
+-- ============================================================================
+-- CÂU LỆNH GỌI HÀM TÌM KIẾM BỆNH NHÂN (BÔI ĐEN VÀ CHẠY DÒNG NÀY):
+-- ============================================================================
+
+-- Ví dụ 1: Tìm tất cả bệnh nhân họ 'Nguyễn' có độ tuổi từ 40 đến 70:
+SELECT *
+FROM
+    fn_tim_kiem_benh_nhan_nang_cao ('Nguyễn', NULL, 40, 70);
+
+-- Ví dụ 2: Tìm bệnh nhân theo số điện thoại (ví dụ: '0910185175'):
+SELECT * FROM fn_tim_kiem_benh_nhan_nang_cao ('0910185175');

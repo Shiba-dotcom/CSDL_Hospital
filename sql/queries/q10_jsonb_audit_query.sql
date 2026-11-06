@@ -40,3 +40,4 @@ WHERE
     AND ls.du_lieu_moi ? 'gia_tri_do'
 ORDER BY 
     ls.thoi_gian_sua DESC;
+

@@ -24,6 +24,7 @@ DO $$
 DECLARE
     v_kq RECORD;
     v_gia_tri_cu NUMERIC;
+    v_gia_tri_moi NUMERIC;
 BEGIN
     RAISE NOTICE '>>> [PHIÊN 1] Đang bắt đầu giao dịch và giữ khóa dòng (ROW-LEVEL EXCLUSIVE LOCK)...';
 
@@ -37,13 +38,15 @@ BEGIN
     v_gia_tri_cu := v_kq.gia_tri_do;
     RAISE NOTICE '[PHIÊN 1] Đã khóa thành công dòng kết quả ID = 1 (Giá trị đo hiện thời: %)', v_gia_tri_cu;
 
-    -- 2. Thực hiện cập nhật giá trị mới
+    -- 2. Thực hiện cập nhật giá trị mới (luân phiên thay đổi để luôn tạo biến động khi chạy lại nhiều lần)
     UPDATE ket_qua_dinh_luong
-    SET gia_tri_do = 8.50,
+    SET gia_tri_do = CASE WHEN gia_tri_do = 8.500 THEN 8.650 ELSE 8.500 END,
+        muc_do_canh_bao = 'NGUY_HIEM',
         so_phien_ban = so_phien_ban + 1
-    WHERE ma_ket_qua = 1;
+    WHERE ma_ket_qua = 1
+    RETURNING gia_tri_do INTO v_gia_tri_moi;
 
-    RAISE NOTICE '[PHIÊN 1] Đã cập nhật giá trị mới: 8.50. Chuẩn bị COMMIT...';
+    RAISE NOTICE '[PHIÊN 1] Đã cập nhật giá trị mới: %. Chuẩn bị COMMIT...', v_gia_tri_moi;
 END $$;
 
 -- BƯỚC 3: Mô phỏng cơ chế Khóa lạc quan (Optimistic Concurrency Control - OCC)

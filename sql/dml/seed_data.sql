@@ -7,6 +7,32 @@
 BEGIN;
 
 -- ----------------------------------------------------------------------------
+-- 0. LÀM SẠCH DỮ LIỆU CŨ & RESET SEQUENCE (ĐẢM BẢO TÍNH IDEMPOTENT KHI CHẠY LẠI)
+-- ----------------------------------------------------------------------------
+TRUNCATE TABLE 
+    lich_su_chinh_sua,
+    chi_tiet_don_thuoc,
+    don_thuoc,
+    ket_qua_dinh_luong,
+    ket_qua_hinh_anh,
+    ket_qua_dinh_tinh,
+    ket_qua_xet_nghiem,
+    phieu_chi_dinh_xet_nghiem,
+    ho_so_kham_benh,
+    bac_si,
+    ky_thuat_vien,
+    nhan_vien_tiep_nhan,
+    nhan_vien_y_te,
+    benh_nhan,
+    nguoi,
+    thuoc,
+    danh_muc_xet_nghiem,
+    khoa_phong
+RESTART IDENTITY CASCADE;
+
+ALTER SEQUENCE seq_ket_qua_xet_nghiem_id RESTART WITH 1;
+
+-- ----------------------------------------------------------------------------
 -- 1. NẠP DANH MỤC KHOA PHÒNG (8 Khoa/Phòng)
 -- ----------------------------------------------------------------------------
 INSERT INTO khoa_phong (ma_khoa_phong, ten_khoa_phong, loai_phong, vi_tri_tang) VALUES

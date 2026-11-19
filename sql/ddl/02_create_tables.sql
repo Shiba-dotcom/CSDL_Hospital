@@ -181,6 +181,9 @@ CREATE TABLE IF NOT EXISTS ket_qua_xet_nghiem (
         CHECK (thoi_gian_co_ket_qua IS NULL OR thoi_gian_tiep_nhan_mau IS NULL OR thoi_gian_co_ket_qua >= thoi_gian_tiep_nhan_mau)
 );
 
+-- Gắn quyền sở hữu sequence đa hình về cột khóa chính của bảng cha
+ALTER SEQUENCE seq_ket_qua_xet_nghiem_id OWNED BY ket_qua_xet_nghiem.ma_ket_qua;
+
 -- Lớp con 1: Kết quả xét nghiệm Định lượng (Số học) kế thừa bảng cha
 CREATE TABLE IF NOT EXISTS ket_qua_dinh_luong (
     gia_tri_do          NUMERIC(10,3) NOT NULL,

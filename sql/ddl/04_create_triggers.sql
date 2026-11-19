@@ -190,6 +190,18 @@ BEGIN
     -- Thực hiện cập nhật với Khóa lạc quan (Optimistic Locking)
     UPDATE ket_qua_dinh_luong
     SET gia_tri_do = p_gia_tri_moi,
+        muc_do_canh_bao = CASE
+            WHEN p_gia_tri_moi < (chi_so_min_chuan * 0.75) OR p_gia_tri_moi > (chi_so_max_chuan * 1.25) THEN 'NGUY_HIEM'::canh_bao_enum
+            WHEN p_gia_tri_moi < chi_so_min_chuan THEN 'THAP'::canh_bao_enum
+            WHEN p_gia_tri_moi > chi_so_max_chuan THEN 'CAO'::canh_bao_enum
+            ELSE 'BINH_THUONG'::canh_bao_enum
+        END,
+        ket_luan_tong_quat = CASE
+            WHEN p_gia_tri_moi < (chi_so_min_chuan * 0.75) OR p_gia_tri_moi > (chi_so_max_chuan * 1.25) THEN 'Chỉ số vượt ngưỡng nguy hiểm sau đính chính - Cần xử trí lâm sàng khẩn'
+            WHEN p_gia_tri_moi < chi_so_min_chuan THEN 'Chỉ số thấp hơn ngưỡng tham chiếu sau đính chính'
+            WHEN p_gia_tri_moi > chi_so_max_chuan THEN 'Chỉ số cao hơn ngưỡng tham chiếu sau đính chính'
+            ELSE 'Chỉ số trong giới hạn tham chiếu bình thường sau đính chính'
+        END,
         ma_ktv_thuc_hien = p_ma_ktv,
         thoi_gian_co_ket_qua = CURRENT_TIMESTAMP
     WHERE ma_ket_qua = p_ma_ket_qua 

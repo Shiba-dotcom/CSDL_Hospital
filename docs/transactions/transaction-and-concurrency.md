@@ -37,15 +37,15 @@ Mỗi chu trình nghiệp vụ y tế (như quy trình khám bệnh ngoại trú
   5. Cam kết giao dịch (`COMMIT`).
 - **Kết quả thực thi mẫu từ CSDL Docker:**
 ```text
-psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [1/4] Đã tạo Hồ sơ khám bệnh ID = 254 (BMI tự động tính qua Trigger: 23.53)
-psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [2/4] Đã tạo Phiếu chỉ định xét nghiệm ID = 209
-psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [3/4] Đã ghi nhận 2 kết quả xét nghiệm định lượng cho phiếu ID = 209
-psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [4/4] Đã tạo Đơn thuốc ID = 192 với 2 khoản mục thuốc
+psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [1/4] Đã tạo Hồ sơ khám bệnh ID = 243 (BMI tự động tính qua Trigger: 23.53)
+psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [2/4] Đã tạo Phiếu chỉ định xét nghiệm ID = 202
+psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [3/4] Đã ghi nhận 2 kết quả xét nghiệm định lượng cho phiếu ID = 202
+psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  [4/4] Đã tạo Đơn thuốc ID = 183 với 2 khoản mục thuốc
 psql:sql/transactions/01_scenario_happy_path.sql:81: NOTICE:  ===> KỊCH BẢN 1 HOÀN TẤT THÀNH CÔNG: Mọi dữ liệu đã cam kết (COMMIT) toàn vẹn!
 DO
  ma_ho_so | ma_benh_nhan | chi_so_bmi | ma_phieu_chi_dinh | so_luong_ket_qua_xn | ma_don_thuoc | so_khoan_muc_thuoc 
 ----------+--------------+------------+-------------------+---------------------+--------------+--------------------
-      254 | BN-000002    |      23.53 |               209 |                   2 |          192 |                  2
+      243 | BN-000002    |      23.53 |               202 |                   2 |          183 |                  2
 (1 row)
 ```
 
@@ -60,7 +60,7 @@ DO
   4. Lệnh `ROLLBACK` được kích hoạt để hủy bỏ toàn bộ các bước trước đó.
 - **Kết quả thực thi mẫu chứng minh tính nguyên tử:**
 ```text
-tong_hs_truoc_khi_chay: 251 | tong_phieu_truoc_khi_chay: 207 | tong_kq_truoc_khi_chay: 570
+tong_hs_truoc_khi_chay: 243 | tong_phieu_truoc_khi_chay: 202 | tong_kq_truoc_khi_chay: 615
 
 BEGIN
 >>> [Bước 1] Thêm Hồ sơ khám bệnh vào giao dịch (Tạm thời thành công)...
@@ -68,13 +68,13 @@ INSERT 0 1
 >>> [Bước 2] Thêm Phiếu chỉ định xét nghiệm vào giao dịch (Tạm thời thành công)...
 INSERT 0 1
 >>> [Bước 3] CỐ Ý GÂY LỖI: Chèn kết quả xét nghiệm vi phạm CHECK constraint (min=10.0 > max=2.0)...
-ERROR: new row for relation "ket_qua_dinh_luong" violates check constraint "ket_qua_dinh_luong_check"
-DETAIL: Failing row contains (575, 210, GLUCOSE, null, null, null, CHO_KET_QUA, null, 1, f, 5.500, mmol/L, 10.000, 2.000, BINH_THUONG).
+psql:sql/transactions/02_scenario_rollback_atomicity.sql:43: ERROR:  new row for relation "ket_qua_dinh_luong" violates check constraint "ket_qua_dinh_luong_check"
+DETAIL:  Failing row contains (616, 203, GLUCOSE, null, null, null, CHO_KET_QUA, null, 1, f, 5.500, mmol/L, 10.000, 2.000, BINH_THUONG).
 >>> [Bước 4] PHÁT LỆNH ROLLBACK ĐỂ HỦY BỎ VÀ HOÀN TÁC TOÀN BỘ GIAO DỊCH...
 ROLLBACK
 
 KẾT QUẢ ĐỐI CHỨNG:
-tong_hs_sau_khi_loi: 251 | tong_phieu_sau_khi_loi: 207 | tong_kq_sau_khi_loi: 570
+tong_hs_sau_khi_loi: 243 | tong_phieu_sau_khi_loi: 202 | tong_kq_sau_khi_loi: 615
 so_ho_so_rac_mo_coi: 0
 ```
 *(Số lượng bản ghi trước và sau hoàn toàn bằng nhau, số hồ sơ mồ côi bằng 0 $\rightarrow$ Nguyên tử tính tuyệt đối).*
@@ -95,14 +95,14 @@ so_ho_so_rac_mo_coi: 0
      Nếu số dòng ảnh hưởng (`ROW_COUNT`) bằng 0, hệ thống phát hiện xung đột tương tranh và từ chối cập nhật, cảnh báo người dùng tải lại dữ liệu mới nhất.
 - **Kết quả thực thi mẫu:**
 ```text
-psql:sql/transactions/03_scenario_concurrency_lost_update.sql:47: NOTICE:  >>> [PHIÊN 1] Đang bắt đầu giao dịch và giữ khóa dòng (ROW-LEVEL EXCLUSIVE LOCK)...
-psql:sql/transactions/03_scenario_concurrency_lost_update.sql:47: NOTICE:  [PHIÊN 1] Đã khóa thành công dòng kết quả ID = 1 (Giá trị đo hiện thời: 8.500)
-psql:sql/transactions/03_scenario_concurrency_lost_update.sql:47: NOTICE:  [PHIÊN 1] Đã cập nhật giá trị mới: 8.50. Chuẩn bị COMMIT...
+psql:sql/transactions/03_scenario_concurrency_lost_update.sql:50: NOTICE:  >>> [PHIÊN 1] Đang bắt đầu giao dịch và giữ khóa dòng (ROW-LEVEL EXCLUSIVE LOCK)...
+psql:sql/transactions/03_scenario_concurrency_lost_update.sql:50: NOTICE:  [PHIÊN 1] Đã khóa thành công dòng kết quả ID = 1 (Giá trị đo hiện thời: 8.250)
+psql:sql/transactions/03_scenario_concurrency_lost_update.sql:50: NOTICE:  [PHIÊN 1] Đã cập nhật giá trị mới: 8.500. Chuẩn bị COMMIT...
 DO
-psql:sql/transactions/03_scenario_concurrency_lost_update.sql:72: NOTICE:  >>> [PHIÊN 2] Cố gắng cập nhật với phiên bản cũ (v_expected_version = 1)...
+psql:sql/transactions/03_scenario_concurrency_lost_update.sql:75: NOTICE:  >>> [PHIÊN 2] Cố gắng cập nhật với phiên bản cũ (v_expected_version = 1)...
 DO
-psql:sql/transactions/03_scenario_concurrency_lost_update.sql:72: WARNING:  XUNG ĐỘT TƯƠNG TRANH (OCC CONFLICT): Dữ liệu kết quả ID = 1 đã bị phiên khác thay đổi trước đó!
-psql:sql/transactions/03_scenario_concurrency_lost_update.sql:72: WARNING:  Hệ thống đã ngăn chặn thành công hiện tượng Mất cập nhật (Lost Update)!
+psql:sql/transactions/03_scenario_concurrency_lost_update.sql:75: WARNING:  XUNG ĐỘT TƯƠNG TRANH (OCC CONFLICT): Dữ liệu kết quả ID = 1 đã bị phiên khác thay đổi trước đó!
+psql:sql/transactions/03_scenario_concurrency_lost_update.sql:75: WARNING:  Hệ thống đã ngăn chặn thành công hiện tượng Mất cập nhật (Lost Update)!
 ```
 
 ---

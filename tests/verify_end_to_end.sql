@@ -70,7 +70,14 @@ SELECT
     action_statement AS ham_thuc_thi
 FROM information_schema.triggers
 WHERE trigger_schema IN ('public', 'oop')
-ORDER BY event_object_table, trigger_name;
+ORDER BY event_object_table, trigger_name, event_manipulation;
+
+-- Thống kê tổng số trigger và sự kiện trigger kỳ vọng (14 trigger duy nhất / 16 bản ghi sự kiện)
+SELECT 
+    COUNT(DISTINCT trigger_name) AS tong_so_trigger_duy_nhat,
+    COUNT(*) AS tong_so_su_kien_trigger
+FROM information_schema.triggers
+WHERE trigger_schema IN ('public', 'oop');
 
 \echo '======================================================================'
 \echo '5. KIỂM TRA TRẠNG THÁI VÀ ĐỘ HỢP LỆ CỦA CÁC INDEX'

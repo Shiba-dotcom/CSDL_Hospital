@@ -9,6 +9,7 @@
 
 -- 1.1. Chưa dùng Index (Seq Scan cưỡng bức)
 \echo '--> [1.1] Kế hoạch thực thi khi QUÉT TUẦN TỰ (Sequential Scan):'
+SET enable_seqscan = on;
 SET enable_indexscan = off;
 SET enable_bitmapscan = off;
 
@@ -24,7 +25,10 @@ WHERE kq.ma_danh_muc_xn = 'GLUCOSE'
   AND kq.gia_tri_do >= 7.0;
 
 -- 1.2. Sử dụng Composite B-Tree Index (idx_kqdl_dm_giatri)
+-- Lưu ý: Trên tập dữ liệu mẫu kích thước nhỏ, PostgreSQL có thể tự chọn Seq Scan;
+-- tắt enable_seqscan tạm thời để kiểm chứng hoạt động của Index Scan.
 \echo '--> [1.2] Kế hoạch thực thi khi DÙNG COMPOSITE B-TREE INDEX:'
+SET enable_seqscan = off;
 SET enable_indexscan = on;
 SET enable_bitmapscan = on;
 
@@ -50,6 +54,7 @@ WHERE kq.ma_danh_muc_xn = 'GLUCOSE'
 
 -- 2.1. Quét tuần tự JSONB không dùng GIN Index
 \echo '--> [2.1] Kế hoạch thực thi JSONB khi QUÉT TUẦN TỰ (Seq Scan):'
+SET enable_seqscan = on;
 SET enable_bitmapscan = off;
 SET enable_indexscan = off;
 
@@ -64,12 +69,15 @@ SELECT
 FROM lich_su_chinh_sua ls
 WHERE ls.du_lieu_moi ? 'gia_tri_do';
 
--- 2.2. Dùng GIN Index chuyên dụng cho JSONB
+-- 2.2. Dùng GIN Index chuyên dụng (idx_gin_audit_moi từ 03_create_indexes.sql)
 \echo '--> [2.2] Kế hoạch thực thi JSONB khi DÙNG GIN INDEX:'
+SET enable_seqscan = off;
 SET enable_bitmapscan = on;
 SET enable_indexscan = on;
 
-CREATE INDEX IF NOT EXISTS idx_audit_du_lieu_moi_gin 
+-- Xóa index trùng tên cũ nếu còn tồn tại, sử dụng thống nhất idx_gin_audit_moi
+DROP INDEX IF EXISTS idx_audit_du_lieu_moi_gin;
+CREATE INDEX IF NOT EXISTS idx_gin_audit_moi 
 ON lich_su_chinh_sua USING GIN (du_lieu_moi);
 
 EXPLAIN (ANALYZE, BUFFERS, COSTS, TIMING, SUMMARY)
@@ -90,6 +98,7 @@ WHERE ls.du_lieu_moi ? 'gia_tri_do';
 
 -- 3.1. Quét tuần tự bảng ho_so_kham_benh
 \echo '--> [3.1] Lọc thời gian khi QUÉT TUẦN TỰ (Seq Scan):'
+SET enable_seqscan = on;
 SET enable_indexscan = off;
 SET enable_bitmapscan = off;
 
@@ -125,6 +134,11 @@ FROM ho_so_kham_benh hs
 WHERE hs.thoi_gian_kham >= '2026-10-01 00:00:00' 
   AND hs.thoi_gian_kham < '2026-11-01 00:00:00'
   AND hs.is_deleted = FALSE;
+
+-- Khôi phục cấu hình tối ưu hóa chuẩn trước Benchmark 4 & 5
+RESET enable_seqscan;
+RESET enable_indexscan;
+RESET enable_bitmapscan;
 
 
 \echo '======================================================================'

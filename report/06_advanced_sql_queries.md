@@ -43,7 +43,7 @@
    - *Đặc điểm kỹ thuật:* Mệnh đề cửa sổ `OVER (PARTITION BY ma_benh_nhan ORDER BY thoi_gian_kham)` kết hợp hàm `DENSE_RANK()` đánh số thứ tự đo và `LAG(gia_tri_do, 1)` để trích xuất chỉ số của lần khám trước đó, tính toán mức biến thiên tức thời $\Delta = V_{\text{hiện tại}} - V_{\text{trước}}$.
 4. **Truy vấn Q4 (Recursive CTE - Clinical Care Pathway):**
    - *Mục tiêu:* Tái hiện cây phác đồ điều trị liên tục qua các chuỗi hẹn tái khám của người bệnh.
-   - *Đặc điểm kỹ thuật:* Cấu trúc `WITH RECURSIVE` duyệt qua các nút quan hệ `ma_ho_so_goc` $\rightarrow$ `ma_ho_so_tai_kham`, tạo chuỗi định tuyến đường đi (Path string) và cộng dồn chi phí điều trị lũy kế.
+   - *Đặc điểm kỹ thuật:* Đánh số thứ tự các lượt khám theo thời gian bằng `ROW_NUMBER() OVER (PARTITION BY ma_benh_nhan ORDER BY thoi_gian_kham)` (`visit_seq`), sau đó dùng cấu trúc `WITH RECURSIVE` nối đệ quy từ lượt khám gốc (`visit_seq = 1`) qua các đợt kế tiếp (`next_v.visit_seq = pcp.cap_do_tai_kham + 1`), tạo chuỗi định tuyến đường đi (`HS-60 -> HS-120 -> ...`) và cộng dồn chi phí điều trị lũy kế.
 5. **Truy vấn Q5 (HAVING với Subquery - Xét nghiệm bất thường):**
    - *Mục tiêu:* Cảnh báo Ban Giám đốc về các danh mục xét nghiệm có tỷ lệ kết quả bất thường cao bất thường.
    - *Đặc điểm kỹ thuật:* Sử dụng `HAVING` so sánh tỷ lệ phần trăm được tính từ `CASE WHEN` với trung bình toàn viện từ một subquery độc lập.

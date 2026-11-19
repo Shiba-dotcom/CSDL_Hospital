@@ -29,15 +29,16 @@
 ```
  ma_benh_nhan |      ho_ten       | nhom_mau | so_lan_xet_nghiem_bat_thuong 
 --------------+-------------------+----------+------------------------------
- BN-000018    | Phạm Đức Huy      | AB+      |                            4
  BN-000019    | Hoàng Minh Phúc   | O+       |                            4
  BN-000020    | Huỳnh Văn An      | O-       |                            4
+ BN-000018    | Phạm Đức Huy      | AB+      |                            4
+ BN-000009    | Đặng Hữu Dũng     | B+       |                            3
+ BN-000010    | Bùi Đức Mai       | B-       |                            3
  BN-000011    | Đỗ Minh Tuấn      | AB+      |                            3
  BN-000012    | Hồ Văn Hải        | O+       |                            3
  BN-000013    | Ngô Hữu Nam       | O-       |                            3
  BN-000014    | Dương Đức Tùng    | A+       |                            3
- BN-000015    | Nguyễn Minh Hương | A-       |                            3
-... (Tổng cộng 23 bệnh nhân thỏa mãn điều kiện)
+... (Tổng cộng 25 bệnh nhân thỏa mãn điều kiện)
 ```
 
 ---
@@ -89,13 +90,13 @@
 - **Kết quả thực thi mẫu:**
 
 ```
- ma_benh_nhan |   ten_benh_nhan   | tong_so_lan_kham |                        chuoi_lo_trinh_kham                        |  thoi_diem_kham_gan_nhat   |                  chan_doan_moi_nhat                  | tong_tien_thuoc_luy_ke_vnd 
---------------+-------------------+------------------+-------------------------------------------------------------------+----------------------------+------------------------------------------------------+----------------------------
- BN-000001    | Trần Hữu Khoa     |                7 | HS-60 -> HS-120 -> HS-180 -> HS-240 -> HS-241 -> HS-242 -> HS-244 | 2026-11-06 06:40:22.988297 | Tăng huyết áp độ 1 - Kiểm soát tốt                   |                 1935000.00
- BN-000002    | Lê Đức Quân       |                4 | HS-1 -> HS-61 -> HS-121 -> HS-181                                 | 2026-08-25 09:15:26.273349 | Viêm phế quản cấp bội nhiễm vi khuẩn                 |                  594000.00
- BN-000003    | Phạm Minh Bình    |                4 | HS-2 -> HS-62 -> HS-122 -> HS-182                                 | 2026-08-26 13:03:26.273349 | Cơn đau thắt ngực mạn tính do xơ vữa động mạch       |                 1242000.00
- BN-000004    | Hoàng Văn Linh    |                4 | HS-3 -> HS-63 -> HS-123 -> HS-183                                 | 2026-08-27 16:51:26.273349 | Đái tháo đường Typ 2 có biến chứng mạch máu nhỏ      |                  594000.00
- BN-000005    | Huỳnh Hữu Sơn     |                4 | HS-4 -> HS-64 -> HS-124 -> HS-184                                 | 2026-08-29 04:39:26.273349 | Viêm dạ dày trợt nông có vi khuẩn H. Pylori (+)      |                 1242000.00
+ ma_benh_nhan |   ten_benh_nhan   | tong_so_lan_kham |         chuoi_lo_trinh_kham         |  thoi_diem_kham_gan_nhat   |                  chan_doan_moi_nhat                  | tong_tien_thuoc_luy_ke_vnd 
+--------------+-------------------+------------------+-------------------------------------+----------------------------+------------------------------------------------------+----------------------------
+ BN-000001    | Trần Hữu Khoa     |                4 | HS-60 -> HS-120 -> HS-180 -> HS-240 | 2026-11-19 14:09:46.578306 | Tăng huyết áp độ 2 theo JNC VII - Rối loạn tiền đình |                 1242000.00
+ BN-000002    | Lê Đức Quân       |                4 | HS-1 -> HS-61 -> HS-121 -> HS-181   | 2026-09-09 13:57:46.578306 | Viêm phế quản cấp bội nhiễm vi khuẩn                 |                  594000.00
+ BN-000003    | Phạm Minh Bình    |                4 | HS-2 -> HS-62 -> HS-122 -> HS-182   | 2026-09-10 17:45:46.578306 | Cơn đau thắt ngực mạn tính do xơ vữa động mạch       |                 1242000.00
+ BN-000004    | Hoàng Văn Linh    |                4 | HS-3 -> HS-63 -> HS-123 -> HS-183   | 2026-09-11 21:33:46.578306 | Đái tháo đường Typ 2 có biến chứng mạch máu nhỏ      |                  594000.00
+ BN-000005    | Huỳnh Hữu Sơn     |                4 | HS-4 -> HS-64 -> HS-124 -> HS-184   | 2026-09-13 09:21:46.578306 | Viêm dạ dày trợt nông có vi khuẩn H. Pylori (+)      |                 1242000.00
 ```
 
 ---
@@ -110,7 +111,7 @@
 ```
  ma_danh_muc_xn |               ten_xet_nghiem                | nhom_xet_nghiem | tong_so_luot_xet_nghiem | so_luot_binh_thuong | so_luot_bat_thuong | ty_le_bat_thuong_pct 
 ----------------+---------------------------------------------+-----------------+-------------------------+---------------------+--------------------+----------------------
- GLUCOSE        | Định lượng Glucose máu (Mao mạch/Tĩnh mạch) | SINH_HOA        |                     200 |                  68 |                132 |                66.00
+ GLUCOSE        | Định lượng Glucose máu (Mao mạch/Tĩnh mạch) | SINH_HOA        |                     200 |                  66 |                134 |                67.00
 ```
 
 ---

@@ -94,23 +94,24 @@ WHERE is_deleted = FALSE;
 ## 5.5. Thiết kế Kiểm soát Toàn vẹn & Tự động hóa Audit Trail (Triggers)
 
 ### 5.5.1. Trigger Chống xóa cứng (Hard Delete Prevention)
-- Hàm trigger `fn_prevent_hard_delete()` chặn đứng mọi lệnh `DELETE` phát ra từ ứng dụng đối với các bảng lâm sàng nhạy cảm (`ho_so_kham_benh`, `phieu_chi_dinh_xet_nghiem`, `ket_qua_xet_nghiem`).
+- Hàm trigger `fn_prevent_hard_delete()` chặn đứng mọi lệnh `DELETE` phát ra từ ứng dụng đối với các bảng lâm sàng nhạy cảm (`ho_so_kham_benh`, `phieu_chi_dinh_xet_nghiem`, `ket_qua_xet_nghiem` cùng cả 3 bảng con `ket_qua_dinh_luong`, `ket_qua_hinh_anh`, `ket_qua_dinh_tinh`, và `don_thuoc`).
 - Bắt buộc nhà phát triển và người dùng phải thao tác qua cập nhật logic `is_deleted = TRUE`.
 
-### 5.5.2. Trigger Tự động Lưu vết Lịch sử & Khóa Lạc quan
-- Hàm trigger `fn_audit_ket_qua_xet_nghiem()` được gắn vào sự kiện `BEFORE UPDATE` trên bảng kết quả xét nghiệm.
+### 5.5.2. Trigger Tự động Lưu vết Lịch sử, Khóa Lạc quan & An toàn Dược (CDSS)
+- Các hàm trigger `fn_audit_ket_qua_xet_nghiem()` và `fn_audit_ho_so_kham_benh()` được gắn vào sự kiện `BEFORE UPDATE` trên bảng kết quả xét nghiệm (cha và 3 bảng con) cùng bảng `ho_so_kham_benh`.
 - **Cơ chế hoạt động:**
-  1. Tự động tăng `so_phien_ban = OLD.so_phien_ban + 1` và cập nhật trạng thái kết quả thành `'DINH_CHINH'`.
-  2. Đọc ngữ cảnh phiên làm việc (`app.current_user_id` và `app.current_reason`).
+  1. Tự động tăng `so_phien_ban = OLD.so_phien_ban + 1` và cập nhật trạng thái kết quả thành `'DINH_CHINH'` đối với bảng kết quả xét nghiệm.
+  2. Đọc ngữ cảnh phiên làm việc (`app.current_user_id` và `app.current_reason`) qua hàm dùng chung `fn_resolve_audit_context()`.
   3. Đóng gói toàn bộ dòng dữ liệu trước và sau biến động thành chuỗi `to_jsonb(OLD)` và `to_jsonb(NEW)`.
   4. Chèn một dòng kiểm toán bất biến vào bảng `lich_su_chinh_sua`.
-- Thủ tục lưu trữ `sp_cap_nhat_ket_qua_dinh_luong` cung cấp giao diện chuẩn để đính chính kết quả, bắt buộc cung cấp lý do y khoa $\ge 5$ ký tự và kiểm tra xung đột phiên bản Optimistic Lock.
+- Thủ tục lưu trữ `sp_cap_nhat_ket_qua_dinh_luong` cung cấp giao diện chuẩn để đính chính kết quả, bắt buộc cung cấp lý do y khoa $\ge 5$ ký tự, tự động tính lại `muc_do_canh_bao` và kiểm tra xung đột phiên bản Optimistic Lock.
+- Trigger CDSS `trg_kiem_tra_di_ung` trên `chi_tiet_don_thuoc` tự động đối chiếu hoạt chất thuốc kê đơn với `tien_su_di_ung` của bệnh nhân ngay tại tầng CSDL.
 
 ---
 
 ## 5.6. Kết quả Thực nghiệm Triển khai và Nạp Dữ liệu Mẫu (Seed Data)
 
-Hệ thống đã triển khai thành công bộ dữ liệu mẫu quy mô lớn mô phỏng hoạt động thực tế của một bệnh viện:
+Hệ thống đã triển khai thành công bộ dữ liệu mẫu quy mô lớn mô phỏng hoạt động thực tế của một bệnh viện (`seed_data.sql` có thể chạy lại an toàn nhiều lần nhờ `TRUNCATE ... RESTART IDENTITY CASCADE`):
 
 | Thực thể / Bảng | Số lượng bản ghi thực tế | Chuẩn đầu ra yêu cầu | Đánh giá |
 |---|:---:|:---:|:---:|
@@ -121,8 +122,8 @@ Hệ thống đã triển khai thành công bộ dữ liệu mẫu quy mô lớn
 | `benh_nhan` | 60 | $\ge 50$ bệnh nhân | **Vượt chỉ tiêu** |
 | `ho_so_kham_benh` | 240 | $\ge 200$ hồ sơ khám | **Vượt chỉ tiêu** |
 | `phieu_chi_dinh_xet_nghiem` | 200 | Phiếu chỉ định | Đạt |
-| **`ket_qua_xet_nghiem` (Tổng đa hình)** | **550** | $\ge 500$ kết quả XN | **Vượt chỉ tiêu** |
-| - *Trong đó: `ket_qua_dinh_luong`* | 350 | Đo lường số học | Đạt |
+| **`ket_qua_xet_nghiem` (Tổng đa hình)** | **610** | $\ge 500$ kết quả XN | **Vượt chỉ tiêu** |
+| - *Trong đó: `ket_qua_dinh_luong`* | 410 | Đo lường số học | Đạt |
 | - *Trong đó: `ket_qua_hinh_anh`* | 120 | X-quang, CT | Đạt |
 | - *Trong đó: `ket_qua_dinh_tinh`* | 80 | Vi sinh, kháng sinh đồ | Đạt |
 | `don_thuoc` | 180 | Đơn thuốc | Đạt |

@@ -49,9 +49,21 @@ CREATE INDEX IF NOT EXISTS idx_kq_active
 ON ket_qua_xet_nghiem (ma_phieu_chi_dinh, ma_danh_muc_xn) 
 WHERE is_deleted = FALSE;
 
+-- Chỉ mục Composite phục vụ lọc kết quả định lượng theo danh mục & giá trị đo
+CREATE INDEX IF NOT EXISTS idx_kqdl_dm_giatri 
+ON ket_qua_dinh_luong (ma_danh_muc_xn, gia_tri_do);
+
+-- Chỉ mục Bộ phận lọc hồ sơ khám bệnh theo khoảng thời gian thực tế
+CREATE INDEX IF NOT EXISTS idx_ho_so_thoi_gian_kham 
+ON ho_so_kham_benh (thoi_gian_kham) 
+WHERE is_deleted = FALSE;
+
 -- ----------------------------------------------------------------------------
 -- 3. CHỈ MỤC GIN (GENERALIZED INVERTED INDEX - MẢNG & JSONB)
 -- ----------------------------------------------------------------------------
+
+-- Dọn sạch chỉ mục GIN bị trùng nếu từng tạo trong kịch bản benchmark cũ
+DROP INDEX IF EXISTS idx_audit_du_lieu_moi_gin;
 
 -- GIN Index trên mảng số điện thoại của bảng người (Tìm kiếm nhanh theo SĐT)
 CREATE INDEX IF NOT EXISTS idx_gin_nguoi_sdt 

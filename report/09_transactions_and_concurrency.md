@@ -34,8 +34,8 @@ Khi một giao dịch cập nhật một dòng dữ liệu, PostgreSQL không gh
   4. Xuất `don_thuoc` điện tử kèm 2 dòng thuốc chi tiết (`MED_METFORMIN`, `MED_ATORVA20`).
   5. Cam kết giao dịch (`COMMIT`).
 - **Kết quả thực nghiệm trên Docker:**
-  - Hồ sơ ID `254` được khởi tạo thành công với chỉ số BMI tự động tính $23.53$.
-  - Phiếu chỉ định ID `209` và Đơn thuốc ID `192` được liên kết chính xác 100% qua khóa ngoại `ma_ho_so = 254`.
+  - Hồ sơ ID `243` được khởi tạo thành công với chỉ số BMI tự động tính $23.53$.
+  - Phiếu chỉ định ID `202` và Đơn thuốc ID `183` được liên kết chính xác 100% qua khóa ngoại `ma_ho_so = 243`.
   - Mọi dữ liệu đã được lưu trữ bền vững (Persisted) vào đĩa.
 
 ---
@@ -47,8 +47,8 @@ Khi một giao dịch cập nhật một dòng dữ liệu, PostgreSQL không gh
   3. Tại bước 3, cố tình chèn kết quả xét nghiệm định lượng có `chi_so_min_chuan = 10.0` lớn hơn `chi_so_max_chuan = 2.0` $\rightarrow$ Vi phạm CHECK constraint `ket_qua_dinh_luong_check`.
   4. Hệ quản trị ném lỗi và kích hoạt lệnh `ROLLBACK` để hoàn tác toàn bộ giao dịch.
 - **Kết quả kiểm chứng tính nguyên tử:**
-  - Số lượng bản ghi trước khi chạy: **251** hồ sơ, **207** phiếu chỉ định, **570** kết quả.
-  - Số lượng bản ghi sau khi ROLLBACK: **251** hồ sơ, **207** phiếu chỉ định, **570** kết quả.
+  - Số lượng bản ghi trước khi chạy: **243** hồ sơ, **202** phiếu chỉ định, **615** kết quả.
+  - Số lượng bản ghi sau khi ROLLBACK: **243** hồ sơ, **202** phiếu chỉ định, **615** kết quả.
   - Số lượng hồ sơ rác mồ côi: **0 bản ghi** (`so_ho_so_rac_mo_coi = 0`).
   - Toàn bộ các thao tác tạm thời ở bước 1 và 2 đã bị hủy bỏ sạch sẽ, chứng minh nguyên lý "All-or-Nothing" hoạt động hoàn hảo.
 
@@ -61,7 +61,7 @@ Khi một giao dịch cập nhật một dòng dữ liệu, PostgreSQL không gh
   2. **Khóa lạc quan (Optimistic Concurrency Control - OCC):** Sử dụng trường quản lý phiên bản `so_phien_ban`:
      $$\text{UPDATE} \dots \text{SET } so\_phien\_ban = so\_phien\_ban + 1 \text{ WHERE } ma\_ket\_qua = 1 \text{ AND } so\_phien\_ban = v\_expected\_version$$
 - **Kết quả thực nghiệm trên Docker:**
-  - Phiên 1 cập nhật thành công, nâng `so_phien_ban` từ $4$ lên $5$.
+  - Phiên 1 cập nhật thành công (`8.250 -> 8.500`), nâng `so_phien_ban` từ $2$ lên $3$.
   - Phiên 2 cố gắng cập nhật dựa trên phiên bản cũ (`v_expected_version = 1`) $\rightarrow$ Số dòng cập nhật = 0.
   - Hệ thống phát hiện xung đột và quăng cảnh báo:
     > `WARNING: XUNG ĐỘT TƯƠNG TRANH (OCC CONFLICT): Dữ liệu kết quả ID = 1 đã bị phiên khác thay đổi trước đó! Hệ thống đã ngăn chặn thành công hiện tượng Mất cập nhật (Lost Update)!`

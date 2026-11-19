@@ -37,7 +37,7 @@
 1. KHỞI TẠO VÀ THỰC THI Q7: STORED PROCEDURE QUY TRÌNH KHÁM BỆNH
 ======================================================================
 CREATE PROCEDURE
-psql:sql/queries/run_week8_queries.sql:33: NOTICE:  KHÁM BỆNH THÀNH CÔNG: Hồ sơ ID: 244, Phiếu XN ID: 203, Đơn thuốc ID: 185
+psql:sql/queries/q07_stored_procedure_workflow.sql:160: NOTICE:  KHÁM BỆNH THÀNH CÔNG: Hồ sơ ID: 241, Phiếu XN ID: 201, Đơn thuốc ID: 181
 DO
 ```
 
@@ -60,7 +60,7 @@ DO
 --> Báo cáo gom nhóm theo BÁC SĨ:
  tieu_chi_nhom |      ten_doi_tuong       | so_luot_kham | so_don_thuoc | tong_tien_thuoc_vnd 
 ---------------+--------------------------+--------------+--------------+---------------------
- NV-00001      | BS.CKII. Trần Đình Khoa  |           83 |           63 |         19053000.00
+ NV-00001      | BS.CKII. Trần Đình Khoa  |           81 |           61 |         18591000.00
  NV-00002      | ThS.BS. Lê Thị Mai Lan   |           80 |           60 |         18360000.00
  NV-00003      | BS.CKI. Nguyễn Hoàng Nam |           80 |           60 |         18360000.00
 (3 rows)
@@ -68,7 +68,7 @@ DO
 --> Báo cáo gom nhóm theo KHOA PHÒNG:
  tieu_chi_nhom |        ten_doi_tuong         | so_luot_kham | so_don_thuoc | tong_tien_thuoc_vnd 
 ---------------+------------------------------+--------------+--------------+---------------------
- P_101         | Phòng Khám Nội Tổng Quát 101 |           83 |           63 |         19053000.00
+ P_101         | Phòng Khám Nội Tổng Quát 101 |           81 |           61 |         18591000.00
  P_102         | Phòng Khám Tim Mạch 102      |           80 |           60 |         18360000.00
  P_103         | Phòng Khám Hô Hấp 103        |           80 |           60 |         18360000.00
 (3 rows)
@@ -112,9 +112,9 @@ DO
 ```text
  ma_lich_su |      ten_bang      | ma_ket_qua_bi_sua | phien_ban_truoc_khi_sua | loai_thao_tac | ma_xet_nghiem | gia_tri_do_cu | gia_tri_do_moi | don_vi | bien_do_chenh_lech |     bien_dong_canh_bao     |                         ly_do_sua                          | ma_ktv_sua |   ten_ktv_sua    |       thoi_gian_sua        
 ------------+--------------------+-------------------+-------------------------+---------------+---------------+---------------+----------------+--------+--------------------+----------------------------+------------------------------------------------------------+------------+------------------+----------------------------
-          1 | ket_qua_dinh_luong | 1                 |                       1 | UPDATE        | GLUCOSE       |         4.150 |          8.250 | mmol/L |              4.100 | BINH_THUONG -> NGUY_HIEM   | Hiệu chuẩn lại máy phân tích tự động Beckman Coulter số 01 | NV-00004   | KTV. Đỗ Văn Hùng | 2026-11-19 01:42:14.842359
-          2 | ket_qua_dinh_luong | 2                 |                       1 | UPDATE        | GLUCOSE       |         4.300 |          5.100 | mmol/L |              0.800 | BINH_THUONG -> BINH_THUONG | Kỹ thuật viên đối chiếu lại mẫu huyết thanh chạy lần 2     | NV-00004   | KTV. Đỗ Văn Hùng | 2026-11-19 01:42:14.842359
-          3 | ket_qua_dinh_luong | 5                 |                       1 | UPDATE        | GLUCOSE       |         4.750 |          7.800 | mmol/L |              3.050 | BINH_THUONG -> CAO         | Đính chính kết quả sau khi pha loãng mẫu bệnh phẩm         | NV-00004   | KTV. Đỗ Văn Hùng | 2026-11-19 01:42:14.842359
+          1 | ket_qua_dinh_luong | 1                 |                       1 | UPDATE        | GLUCOSE       |         4.150 |          8.250 | mmol/L |              4.100 | BINH_THUONG -> NGUY_HIEM   | Hiệu chuẩn lại máy phân tích tự động Beckman Coulter số 01 | NV-00004   | KTV. Đỗ Văn Hùng | 2026-11-19 13:49:46.578306
+          2 | ket_qua_dinh_luong | 2                 |                       1 | UPDATE        | GLUCOSE       |         4.300 |          5.100 | mmol/L |              0.800 | BINH_THUONG -> BINH_THUONG | Kỹ thuật viên đối chiếu lại mẫu huyết thanh chạy lần 2     | NV-00004   | KTV. Đỗ Văn Hùng | 2026-11-19 13:49:46.578306
+          3 | ket_qua_dinh_luong | 5                 |                       1 | UPDATE        | GLUCOSE       |         4.750 |          7.800 | mmol/L |              3.050 | BINH_THUONG -> CAO         | Đính chính kết quả sau khi pha loãng mẫu bệnh phẩm         | NV-00004   | KTV. Đỗ Văn Hùng | 2026-11-19 13:49:46.578306
 (3 rows)
 ```
 
@@ -131,7 +131,7 @@ DO
 ```text
  ma_bac_si |      ho_ten_bac_si       |   chuyen_khoa_chinh   |        khoa_lam_viec         | so_xn_sinh_hoa | so_xn_huyet_hoc | so_xn_chieu_chup | so_xn_tham_do_cn | so_xn_vi_sinh | tong_so_chi_dinh | ty_le_chieu_chup_pct 
 -----------+--------------------------+-----------------------+------------------------------+----------------+-----------------+------------------+------------------+---------------+------------------+----------------------
- NV-00001  | BS.CKII. Trần Đình Khoa  | Nội Tổng Quát         | Phòng Khám Nội Tổng Quát 101 |            125 |               0 |               43 |                0 |            26 |              194 |                22.16
+ NV-00001  | BS.CKII. Trần Đình Khoa  | Nội Tổng Quát         | Phòng Khám Nội Tổng Quát 101 |            178 |               0 |               41 |                0 |            26 |              245 |                16.73
  NV-00003  | BS.CKI. Nguyễn Hoàng Nam | Hô Hấp                | Phòng Khám Hô Hấp 103        |            117 |               0 |               40 |                0 |            27 |              184 |                21.74
  NV-00002  | ThS.BS. Lê Thị Mai Lan   | Tim Mạch & Chuyển Hóa | Phòng Khám Tim Mạch 102      |            117 |               0 |               40 |                0 |            27 |              184 |                21.74
 (3 rows)

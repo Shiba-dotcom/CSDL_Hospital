@@ -100,9 +100,9 @@ BEGIN
         RAISE NOTICE '==> TEST 2: TRIGGER ĐÃ BẢO VỆ THÀNH CÔNG! Chặn đứng kê thuốc Augmentin cho bệnh nhân dị ứng Penicillin!';
     END;
 
-    -- Dọn dẹp dữ liệu thử nghiệm
+    -- Dọn dẹp dữ liệu thử nghiệm (tuân thủ quy tắc chống xóa cứng trên don_thuoc và ho_so_kham_benh)
     DELETE FROM chi_tiet_don_thuoc WHERE ma_don_thuoc = v_test_don_id;
-    DELETE FROM don_thuoc WHERE ma_don_thuoc = v_test_don_id;
+    UPDATE don_thuoc SET is_deleted = TRUE WHERE ma_don_thuoc = v_test_don_id;
     UPDATE ho_so_kham_benh SET is_deleted = TRUE WHERE ma_ho_so = v_hs_id;
 END $$;
 

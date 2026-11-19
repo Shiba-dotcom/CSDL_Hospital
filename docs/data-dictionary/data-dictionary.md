@@ -51,7 +51,7 @@
 
 | Tên cột | Kiểu dữ liệu | Khóa | Null? | Default | Ràng buộc kiểm tra (CHECK) | Diễn giải |
 |---|---|:---:|:---:|---|---|---|
-| `ma_benh_nhan` | `CHAR(10)` | **PK** | NOT NULL | | `ma_benh_nhan ~ '^BN-[0-9]{6}$'` | Mã bệnh nhân y tế (Format: `BN-XXXXXX`) |
+| `ma_benh_nhan` | `VARCHAR(10)` (`ma_bn_domain`) | **PK** | NOT NULL | | `ma_benh_nhan ~ '^BN-[0-9]{6,7}$'` | Mã bệnh nhân y tế (Format: `BN-XXXXXX` hoặc `BN-XXXXXXX`) |
 | `ma_dinh_danh` | `CHAR(12)` | **FK, UK** | NOT NULL | | Tham chiếu `nguoi(ma_dinh_danh)` | Khóa ngoại nối sang bảng `nguoi` |
 | `nhom_mau` | `VARCHAR(5)` | | NULL | | `nhom_mau IN ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')` | Nhóm máu hệ ABO và Rh |
 | `tien_su_di_ung` | `TEXT` | | NULL | | | Tiền sử dị ứng thuốc, thức ăn, hóa chất |
@@ -101,7 +101,7 @@
 | Tên cột | Kiểu dữ liệu | Khóa | Null? | Default | Ràng buộc kiểm tra (CHECK) | Diễn giải |
 |---|---|:---:|:---:|---|---|---|
 | `ma_nhan_vien` | `CHAR(8)` | **PK, FK** | NOT NULL | | Tham chiếu `nhan_vien_y_te(ma_nhan_vien)` | Khóa chính đồng thời là khóa ngoại |
-| `quay_tiep_nhan` | `VARCHAR(20)`| | NOT NULL | | | Tên quầy tiếp đón phục vụ (Quầy 1, Quầy 2...) |
+| `quay_tiep_nhan` | `VARCHAR(30)`| | NOT NULL | | | Tên quầy tiếp đón phục vụ (Quầy 1, Quầy 2...) |
 
 ---
 
@@ -113,7 +113,7 @@
 | `ma_khoa_phong` | `VARCHAR(10)` | **PK** | NOT NULL | | `ma_khoa_phong ~ '^[A-Z0-9_]{3,10}$'` | Mã viết tắt (VD: `K_KHAM`, `P_101`, `XN_SH`) |
 | `ten_khoa_phong`| `VARCHAR(100)`| | NOT NULL | | `LENGTH(TRIM(ten_khoa_phong)) >= 3` | Tên phòng ban hoặc phòng khám |
 | `loai_phong` | `VARCHAR(30)` | | NOT NULL | | `IN ('KHOA_CHUYEN_MON', 'PHONG_KHAM_LAMSANG', 'PHONG_XET_NGHIEM', 'PHONG_CHUP_CHIEU', 'QUAY_TIEP_DON')` | Phân loại chức năng phòng |
-| `vi_tri_tang` | `VARCHAR(20)` | | NULL | | | Vị trí: Tầng 1 Tòa A, Tầng 2 Tòa B... |
+| `vi_tri_tang` | `VARCHAR(50)` | | NULL | | | Vị trí: Tầng 1 - Tòa A, Tầng 2 - Tòa B... |
 
 ---
 
@@ -123,7 +123,7 @@
 | Tên cột | Kiểu dữ liệu | Khóa | Null? | Default | Ràng buộc kiểm tra (CHECK) | Diễn giải |
 |---|---|:---:|:---:|---|---|---|
 | `ma_ho_so` | `BIGSERIAL` | **PK** | NOT NULL | | | Khóa chính tự tăng |
-| `ma_benh_nhan` | `CHAR(10)` | **FK** | NOT NULL | | Tham chiếu `benh_nhan(ma_benh_nhan)` | Bệnh nhân được khám |
+| `ma_benh_nhan` | `VARCHAR(10)` (`ma_bn_domain`) | **FK** | NOT NULL | | Tham chiếu `benh_nhan(ma_benh_nhan)` | Bệnh nhân được khám |
 | `ma_bac_si_kham`| `CHAR(8)` | **FK** | NOT NULL | | Tham chiếu `bac_si(ma_nhan_vien)` | Bác sĩ phụ trách lượt khám |
 | `ma_phong_kham` | `VARCHAR(10)` | **FK** | NOT NULL | | Tham chiếu `khoa_phong(ma_khoa_phong)` | Phòng khám lâm sàng diễn ra đợt khám |
 | `thoi_gian_tiep_nhan`| `TIMESTAMP`| | NOT NULL | `CURRENT_TIMESTAMP` | | Thời điểm đăng ký tiếp nhận |
@@ -193,11 +193,11 @@
 ---
 
 ### 2.12. Bảng `ket_qua_dinh_luong` (Kế thừa từ `ket_qua_xet_nghiem`)
-*Mô tả: Kết quả dạng số, so sánh với khoảng tham chiếu.*
+*Mô tả: Kết quả dạng số, so sánh với khoảng tham chiếu. Do PostgreSQL không tự kế thừa ràng buộc khóa từ bảng cha, bảng con định nghĩa tường minh `PK (ma_ket_qua)`, `UNIQUE (ma_phieu_chi_dinh, ma_danh_muc_xn)` và các `FK` tham chiếu phiếu chỉ định, danh mục xét nghiệm, kỹ thuật viên.*
 
 | Tên cột | Kiểu dữ liệu | Khóa | Null? | Default | Ràng buộc kiểm tra (CHECK) | Diễn giải |
 |---|---|:---:|:---:|---|---|---|
-| *(Các trường kế thừa)*| | | | | *(Thừa hưởng toàn bộ trường của `ket_qua_xet_nghiem`)* | |
+| *(Các trường kế thừa)*| | **PK, FK, UK** | | | `PK(ma_ket_qua)`, `UK(ma_phieu_chi_dinh, ma_danh_muc_xn)`, `FK` tới Phiếu/Danh mục/KTV | *(Thừa hưởng toàn bộ cột của `ket_qua_xet_nghiem`)* |
 | `gia_tri_do` | `NUMERIC(10,3)`| | NOT NULL | | | Giá trị số đo lường thực tế từ máy phân tích |
 | `don_vi_tinh` | `VARCHAR(30)` | | NOT NULL | | | Đơn vị: `mmol/L`, `mg/dL`, `g/L`, `10^9/L`... |
 | `chi_so_min_chuan`| `NUMERIC(10,3)`| | NOT NULL | | | Ngưỡng sinh lý dưới bình thường |
@@ -207,11 +207,11 @@
 ---
 
 ### 2.13. Bảng `ket_qua_hinh_anh` (Kế thừa từ `ket_qua_xet_nghiem`)
-*Mô tả: Kết quả chẩn đoán hình ảnh.*
+*Mô tả: Kết quả chẩn đoán hình ảnh. Định nghĩa tường minh `PK (ma_ket_qua)`, `UNIQUE (ma_phieu_chi_dinh, ma_danh_muc_xn)` và các `FK` tương ứng.*
 
 | Tên cột | Kiểu dữ liệu | Khóa | Null? | Default | Ràng buộc kiểm tra (CHECK) | Diễn giải |
 |---|---|:---:|:---:|---|---|---|
-| *(Các trường kế thừa)*| | | | | *(Thừa hưởng toàn bộ trường của `ket_qua_xet_nghiem`)* | |
+| *(Các trường kế thừa)*| | **PK, FK, UK** | | | `PK(ma_ket_qua)`, `UK(ma_phieu_chi_dinh, ma_danh_muc_xn)`, `FK` tới Phiếu/Danh mục/KTV | *(Thừa hưởng toàn bộ cột của `ket_qua_xet_nghiem`)* |
 | `duong_dan_tep_anh`| `TEXT` | | NOT NULL | | `LENGTH(TRIM(duong_dan_tep_anh)) > 0` | URL hoặc đường dẫn file ảnh DICOM/JPG |
 | `ky_thuat_chup` | `VARCHAR(100)`| | NOT NULL | | | Chụp thẳng, chụp nghiêng, cản quang... |
 | `vung_khao_sat` | `VARCHAR(100)`| | NOT NULL | | | Lồng ngực, Sọ não, Ổ bụng tổng quát... |
@@ -220,11 +220,11 @@
 ---
 
 ### 2.14. Bảng `ket_qua_dinh_tinh` (Kế thừa từ `ket_qua_xet_nghiem`)
-*Mô tả: Kết quả vi sinh, giải phẫu bệnh, định tính.*
+*Mô tả: Kết quả vi sinh, giải phẫu bệnh, định tính. Định nghĩa tường minh `PK (ma_ket_qua)`, `UNIQUE (ma_phieu_chi_dinh, ma_danh_muc_xn)` và các `FK` tương ứng.*
 
 | Tên cột | Kiểu dữ liệu | Khóa | Null? | Default | Ràng buộc kiểm tra (CHECK) | Diễn giải |
 |---|---|:---:|:---:|---|---|---|
-| *(Các trường kế thừa)*| | | | | *(Thừa hưởng toàn bộ trường của `ket_qua_xet_nghiem`)* | |
+| *(Các trường kế thừa)*| | **PK, FK, UK** | | | `PK(ma_ket_qua)`, `UK(ma_phieu_chi_dinh, ma_danh_muc_xn)`, `FK` tới Phiếu/Danh mục/KTV | *(Thừa hưởng toàn bộ cột của `ket_qua_xet_nghiem`)* |
 | `ket_qua_danh_gia`| `VARCHAR(20)`| | NOT NULL | | `IN ('AM_TINH', 'DUONG_TINH', 'NGHI_NGO')` | Kết luận định tính |
 | `ten_chung_vi_khuan`| `VARCHAR(150)`| | NULL | | | Tên vi khuẩn/virus phân lập (nếu dương tính) |
 | `mo_ta_vi_sinh` | `TEXT` | | NULL | | | Mô tả hình thái, khuẩn lạc, nhuộm Gram |
@@ -283,7 +283,7 @@
 | Tên cột | Kiểu dữ liệu | Khóa | Null? | Default | Ràng buộc kiểm tra (CHECK) | Diễn giải |
 |---|---|:---:|:---:|---|---|---|
 | `ma_lich_su` | `BIGSERIAL` | **PK** | NOT NULL | | | Khóa chính tự sinh |
-| `ten_bang` | `VARCHAR(50)` | | NOT NULL | | `ten_bang IN ('ket_qua_xet_nghiem', 'ho_so_kham_benh', 'don_thuoc')` | Bảng phát sinh biến động dữ liệu |
+| `ten_bang` | `VARCHAR(50)` | | NOT NULL | | Các bảng được Audit Trigger giám sát (`'ket_qua_xet_nghiem'`, `'ket_qua_dinh_luong'`, `'ket_qua_hinh_anh'`, `'ket_qua_dinh_tinh'`, `'ho_so_kham_benh'`) | Bảng phát sinh biến động dữ liệu (ghi qua `TG_TABLE_NAME`) |
 | `ma_ban_ghi` | `VARCHAR(50)` | | NOT NULL | | | Khóa chính của bản ghi bị tác động |
 | `so_phien_ban` | `INTEGER` | | NOT NULL | | `so_phien_ban >= 1` | Phiên bản tại thời điểm ghi vết |
 | `loai_thao_tac` | `VARCHAR(20)` | | NOT NULL | | `loai_thao_tac IN ('INSERT', 'UPDATE', 'SOFT_DELETE')` | Hành động thực thi trên dữ liệu |

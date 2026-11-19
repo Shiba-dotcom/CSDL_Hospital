@@ -51,26 +51,28 @@ Nhóm tác giả đã tiến hành thực nghiệm đo kiểm hiệu năng trên
 
 ### 8.3.1. Bảng tổng hợp số liệu đo kiểm
 
-| Kịch bản Benchmark | Kỹ thuật tối ưu áp dụng | Thời gian quét tuần tự (ms) | Thời gian quét có chỉ mục (ms) | Tỷ lệ tăng tốc hiệu năng |
-|---|---|:---:|:---:|:---:|
-| **1. Định lượng Glucose máu** | Composite B-Tree Index `(ma_danh_muc_xn, gia_tri_do)` | 27.059 ms | **0.092 ms** | **Nhanh hơn 294.1 lần** |
-| **2. Truy vết Audit JSONB** | GIN Index `USING GIN (du_lieu_moi)` | 1.511 ms | **0.039 ms** | **Nhanh hơn 38.7 lần** |
-| **3. Lọc hồ sơ theo thời gian** | Partial B-Tree Index `WHERE is_deleted = FALSE` | 1.002 ms | **0.078 ms** | **Nhanh hơn 12.8 lần** |
-| **4. Window Function (Q3)** | Quicksort in-memory (`work_mem = 36kB`) | — | **2.840 ms** | Không bị trào đĩa I/O |
-| **5. Quét đa hình kế thừa** | Polymorphic Append Scan (568 bản ghi) | — | **0.938 ms** | Chi phí tối thiểu |
+| Kịch bản Benchmark | Kỹ thuật tối ưu áp dụng | Quét tuần tự (`Seq Scan`) | Thực thi qua Index | Kết quả & Giải thích |
+|---|---|:---:|:---:|---|
+| **1. Định lượng Glucose** | Composite B-Tree Index `(ma_danh_muc_xn, gia_tri_do)` | `0.158 ms` *(10 pages, loại 290 dòng)* | `0.159 ms` *(Bitmap Index Scan, `enable_seqscan = off`, 9 pages)* | Triệt tiêu lọc dòng thừa tại Heap; giảm **94.5%** Planning Time (`1.258 → 0.069 ms`) |
+| **2. Truy vết Audit JSONB** | GIN Index `idx_gin_audit_moi` (`USING GIN (du_lieu_moi)`) | `0.031 ms` *(1 page)* | `0.295 ms` *(Bitmap Index Scan, `enable_seqscan = off`, 4 pages)* | Xác nhận GIN Index xử lý toán tử `?`; bảng 4 dòng chỉ 1 trang nên đọc tuần tự nhanh hơn |
+| **3. Lọc hồ sơ theo thời gian** | Partial B-Tree Index `WHERE is_deleted = FALSE` | `0.131 ms` *(13 pages, cost 16.63)* | **`0.098 ms`** *(Index Scan tự động, 3 pages, cost 9.65)* | **Nhanh hơn 1.34 lần**, giảm **76.9%** số trang RAM đọc & **42.0%** cost |
+| **4. Window Function (Q3)** | Quicksort in-memory (`Memory: 35kB`) | — | **`0.840 ms`** | 100% xử lý trong RAM (`shared hit = 35`), không tràn đĩa I/O |
+| **5. Quét đa hình kế thừa** | Polymorphic Append Scan (613 bản ghi lúc đo) | — | **`0.142 ms`** | Quét liền mạch 3 bảng con không cần `UNION` (`ONLY`: `0.006 ms`) |
+
+*(Lưu ý: Trên dữ liệu mẫu nằm gọn trong 1–10 trang nhớ, ở B1 & B2 phải tắt `enable_seqscan` tạm thời để kiểm chứng kế hoạch Index hoạt động, không tắt trên Production).*
 
 ### 8.3.2. Đánh giá kiểm thử toàn vẹn hệ thống (Health Check)
-Kết quả chạy script kiểm thử độc lập [verify_end_to_end.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/tests/verify_end_to_end.sql) xác nhận:
+Kết quả chạy script kiểm thử độc lập [verify_end_to_end.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/tests/verify_end_to_end.sql) sau trọn bộ kịch bản kiểm thử xác nhận:
 1. **Dữ liệu phân bổ đúng chuẩn:**
    - 66 Người dùng $\rightarrow$ 60 Bệnh nhân, 6 Nhân viên y tế (3 Bác sĩ, 2 Kỹ thuật viên, 1 Tiếp đón).
-   - 249 Hồ sơ khám bệnh ngoại trú.
-   - 205 Phiếu chỉ định cận lâm sàng $\rightarrow$ 568 Kết quả xét nghiệm (363 định lượng, 125 hình ảnh, 80 vi sinh).
-   - 185 Đơn thuốc $\rightarrow$ 460 Chi tiết dòng thuốc.
+   - 243 Hồ sơ khám bệnh ngoại trú (từ 240 hồ sơ seed gốc + 3 hồ sơ sinh thêm khi chạy Q7, Q12 và Transaction).
+   - 202 Phiếu chỉ định cận lâm sàng $\rightarrow$ 615 Kết quả xét nghiệm (414 định lượng, 121 hình ảnh, 80 vi sinh; từ 610 bản ghi gốc).
+   - 183 Đơn thuốc $\rightarrow$ 454 Chi tiết dòng thuốc (từ 180 đơn / 450 dòng gốc) và 5 bản ghi lịch sử chỉnh sửa trong `lich_su_chinh_sua`.
 2. **Tính toàn vẹn tham chiếu:**
    - Số hồ sơ mồ côi bệnh nhân: **0**.
    - Số phiếu xét nghiệm mồ côi hồ sơ: **0**.
    - Số kết quả xét nghiệm mồ côi phiếu: **0**.
    - Số dòng thuốc mồ côi đơn thuốc: **0**.
 3. **An toàn dữ liệu:**
-   - 11/11 Triggers hoạt động chính xác (tự động tính BMI, ghi nhận Audit Trail, ngăn chặn hard delete, và hệ thống CDSS cảnh báo dị ứng thuốc).
+   - **14/14 Triggers duy nhất (16 bản ghi sự kiện trigger)** hoạt động chính xác: tự động tính BMI, ghi nhận Audit Trail cho cả kết quả xét nghiệm lẫn hồ sơ khám bệnh, ngăn chặn hard delete trên các bảng lâm sàng (kể cả 3 bảng con kế thừa và `don_thuoc`), và hệ thống CDSS cảnh báo dị ứng thuốc.
 

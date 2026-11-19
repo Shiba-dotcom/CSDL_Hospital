@@ -35,6 +35,27 @@ CREATE TRIGGER trg_prevent_delete_kq
     BEFORE DELETE ON ket_qua_xet_nghiem
     FOR EACH ROW EXECUTE FUNCTION fn_prevent_hard_delete();
 
+-- PostgreSQL Table Inheritance không tự động kế thừa Trigger -> gắn cho cả 3 bảng con kết quả
+DROP TRIGGER IF EXISTS trg_prevent_delete_kq_dl ON ket_qua_dinh_luong;
+CREATE TRIGGER trg_prevent_delete_kq_dl
+    BEFORE DELETE ON ket_qua_dinh_luong
+    FOR EACH ROW EXECUTE FUNCTION fn_prevent_hard_delete();
+
+DROP TRIGGER IF EXISTS trg_prevent_delete_kq_ha ON ket_qua_hinh_anh;
+CREATE TRIGGER trg_prevent_delete_kq_ha
+    BEFORE DELETE ON ket_qua_hinh_anh
+    FOR EACH ROW EXECUTE FUNCTION fn_prevent_hard_delete();
+
+DROP TRIGGER IF EXISTS trg_prevent_delete_kq_dt ON ket_qua_dinh_tinh;
+CREATE TRIGGER trg_prevent_delete_kq_dt
+    BEFORE DELETE ON ket_qua_dinh_tinh
+    FOR EACH ROW EXECUTE FUNCTION fn_prevent_hard_delete();
+
+DROP TRIGGER IF EXISTS trg_prevent_delete_don_thuoc ON don_thuoc;
+CREATE TRIGGER trg_prevent_delete_don_thuoc
+    BEFORE DELETE ON don_thuoc
+    FOR EACH ROW EXECUTE FUNCTION fn_prevent_hard_delete();
+
 -- ----------------------------------------------------------------------------
 -- 2. HÀM TRIGGER TỰ ĐỘNG TÍNH BMI KHI GHI NHẬN CHỈ SỐ SINH TỒN
 -- ----------------------------------------------------------------------------
@@ -63,43 +84,50 @@ CREATE TRIGGER trg_calc_bmi
 --   2. Lấy thông tin người sửa và lý do sửa từ Session Context hoặc giá trị mặc định
 --   3. Ghi lại snapshot JSONB của toàn bộ bản ghi cũ và bản ghi mới
 
+-- Helper dùng chung để lấy ngữ cảnh người thực hiện, lý do và loại thao tác Audit
+CREATE OR REPLACE FUNCTION fn_resolve_audit_context(
+    p_default_user          ma_nv_domain,
+    p_is_soft_delete        BOOLEAN,
+    p_default_update_reason TEXT,
+    p_default_delete_reason TEXT,
+    OUT o_nguoi_thuc_hien   ma_nv_domain,
+    OUT o_ly_do_sua         TEXT,
+    OUT o_thao_tac          thao_tac_audit_enum
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    BEGIN
+        o_nguoi_thuc_hien := NULLIF(TRIM(current_setting('app.current_user_id', true)), '')::ma_nv_domain;
+    EXCEPTION WHEN OTHERS THEN
+        o_nguoi_thuc_hien := NULL;
+    END;
+
+    IF o_nguoi_thuc_hien IS NULL THEN
+        o_nguoi_thuc_hien := p_default_user;
+    END IF;
+
+    o_thao_tac := CASE WHEN p_is_soft_delete THEN 'SOFT_DELETE'::thao_tac_audit_enum ELSE 'UPDATE'::thao_tac_audit_enum END;
+
+    o_ly_do_sua := current_setting('app.current_reason', true);
+    IF o_ly_do_sua IS NULL OR LENGTH(TRIM(o_ly_do_sua)) < 5 THEN
+        o_ly_do_sua := CASE WHEN p_is_soft_delete THEN p_default_delete_reason ELSE p_default_update_reason END;
+    END IF;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION fn_audit_ket_qua_xet_nghiem()
 RETURNS TRIGGER AS $$
 DECLARE
-    v_nguoi_thuc_hien ma_nv_domain;
-    v_ly_do_sua       TEXT;
-    v_thao_tac        thao_tac_audit_enum;
+    v_ctx RECORD;
 BEGIN
-    -- Lấy thông tin phiên làm việc nếu có thiết lập qua SET LOCAL app.current_user_id
-    BEGIN
-        v_nguoi_thuc_hien := current_setting('app.current_user_id', true)::ma_nv_domain;
-    EXCEPTION WHEN OTHERS THEN
-        v_nguoi_thuc_hien := NULL;
-    END;
-
-    -- Nếu không có trong context phiên, lấy người thực hiện từ chính bản ghi (KTV thực hiện)
-    IF v_nguoi_thuc_hien IS NULL THEN
-        v_nguoi_thuc_hien := COALESCE(NEW.ma_ktv_thuc_hien, OLD.ma_ktv_thuc_hien, 'NV-00001');
-    END IF;
-
-    -- Lấy lý do chỉnh sửa từ context phiên
-    v_ly_do_sua := current_setting('app.current_reason', true);
-    IF v_ly_do_sua IS NULL OR LENGTH(TRIM(v_ly_do_sua)) < 5 THEN
-        -- Nếu là thao tác xóa mềm
-        IF NEW.is_deleted = TRUE AND OLD.is_deleted = FALSE THEN
-            v_ly_do_sua := 'Hủy bỏ kết quả xét nghiệm theo yêu cầu lâm sàng (Soft Delete)';
-            v_thao_tac := 'SOFT_DELETE';
-        ELSE
-            v_ly_do_sua := 'Đính chính kết quả xét nghiệm / Cập nhật chỉ số phân tích';
-            v_thao_tac := 'UPDATE';
-        END IF;
-    ELSE
-        IF NEW.is_deleted = TRUE AND OLD.is_deleted = FALSE THEN
-            v_thao_tac := 'SOFT_DELETE';
-        ELSE
-            v_thao_tac := 'UPDATE';
-        END IF;
-    END IF;
+    SELECT * INTO v_ctx
+    FROM fn_resolve_audit_context(
+        COALESCE(NEW.ma_ktv_thuc_hien, OLD.ma_ktv_thuc_hien, 'NV-00001'),
+        (NEW.is_deleted = TRUE AND OLD.is_deleted = FALSE),
+        'Đính chính kết quả xét nghiệm / Cập nhật chỉ số phân tích',
+        'Hủy bỏ kết quả xét nghiệm theo yêu cầu lâm sàng (Soft Delete)'
+    );
 
     -- Tự động tăng số phiên bản nếu đây là thao tác UPDATE nội dung
     NEW.so_phien_ban := OLD.so_phien_ban + 1;
@@ -120,11 +148,57 @@ BEGIN
         TG_TABLE_NAME,
         OLD.ma_ket_qua::VARCHAR(50),
         OLD.so_phien_ban,
-        v_thao_tac,
+        v_ctx.o_thao_tac,
         to_jsonb(OLD),
         to_jsonb(NEW),
-        v_ly_do_sua,
-        v_nguoi_thuc_hien,
+        v_ctx.o_ly_do_sua,
+        v_ctx.o_nguoi_thuc_hien,
+        CURRENT_TIMESTAMP
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger Audit Trail cho bảng Hồ sơ khám bệnh (ghi vết cập nhật chẩn đoán & xóa mềm)
+CREATE OR REPLACE FUNCTION fn_audit_ho_so_kham_benh()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_ctx          RECORD;
+    v_so_phien_ban INTEGER;
+BEGIN
+    SELECT * INTO v_ctx
+    FROM fn_resolve_audit_context(
+        COALESCE(NEW.ma_bac_si_kham, OLD.ma_bac_si_kham, 'NV-00001'),
+        (NEW.is_deleted = TRUE AND OLD.is_deleted = FALSE),
+        'Cập nhật thông tin lâm sàng / chẩn đoán trên hồ sơ khám bệnh',
+        'Hủy bỏ hồ sơ khám bệnh theo yêu cầu nghiệp vụ (Soft Delete)'
+    );
+
+    SELECT COALESCE(MAX(so_phien_ban), 0) + 1 INTO v_so_phien_ban
+    FROM lich_su_chinh_sua
+    WHERE ten_bang = TG_TABLE_NAME
+      AND ma_ban_ghi = OLD.ma_ho_so::VARCHAR(50);
+
+    INSERT INTO lich_su_chinh_sua (
+        ten_bang,
+        ma_ban_ghi,
+        so_phien_ban,
+        loai_thao_tac,
+        du_lieu_cu,
+        du_lieu_moi,
+        ly_do_sua,
+        nguoi_thuc_hien,
+        thoi_gian_sua
+    ) VALUES (
+        TG_TABLE_NAME,
+        OLD.ma_ho_so::VARCHAR(50),
+        v_so_phien_ban,
+        v_ctx.o_thao_tac,
+        to_jsonb(OLD),
+        to_jsonb(NEW),
+        v_ctx.o_ly_do_sua,
+        v_ctx.o_nguoi_thuc_hien,
         CURRENT_TIMESTAMP
     );
 
@@ -160,6 +234,13 @@ CREATE TRIGGER trg_audit_kq_dinh_tinh
     FOR EACH ROW
     WHEN (OLD.* IS DISTINCT FROM NEW.*)
     EXECUTE FUNCTION fn_audit_ket_qua_xet_nghiem();
+
+DROP TRIGGER IF EXISTS trg_audit_ho_so ON ho_so_kham_benh;
+CREATE TRIGGER trg_audit_ho_so
+    BEFORE UPDATE ON ho_so_kham_benh
+    FOR EACH ROW
+    WHEN (OLD.* IS DISTINCT FROM NEW.*)
+    EXECUTE FUNCTION fn_audit_ho_so_kham_benh();
 
 -- ----------------------------------------------------------------------------
 -- 4. HÀM THỦ TỤC AN TOÀN ĐỂ SỬA KẾT QUẢ KÈM LÝ DO BẮT BUỘC
@@ -215,4 +296,55 @@ BEGIN
     END IF;
 END;
 $$;
+
+-- ----------------------------------------------------------------------------
+-- 5. TRIGGER HỖ TRỢ QUYẾT ĐỊNH LÂM SÀNG (CDSS) CẢNH BÁO DỊ ỨNG THUỐC
+-- ----------------------------------------------------------------------------
+-- Tự động kiểm tra xung đột hoạt chất thuốc kê đơn với tiền sử dị ứng bệnh nhân
+
+CREATE OR REPLACE FUNCTION fn_kiem_tra_di_ung_thuoc()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_tien_su_di_ung    TEXT;
+    v_hoat_chat         VARCHAR(150);
+    v_ten_thuoc         VARCHAR(150);
+    v_ten_benh_nhan     VARCHAR(100);
+BEGIN
+    SELECT hoat_chat, ten_thuoc 
+    INTO v_hoat_chat, v_ten_thuoc
+    FROM thuoc 
+    WHERE ma_thuoc = NEW.ma_thuoc;
+
+    SELECT bn.tien_su_di_ung, n.ho_ten
+    INTO v_tien_su_di_ung, v_ten_benh_nhan
+    FROM don_thuoc dt
+    JOIN ho_so_kham_benh hs ON dt.ma_ho_so = hs.ma_ho_so
+    JOIN benh_nhan bn ON hs.ma_benh_nhan = bn.ma_benh_nhan
+    JOIN nguoi n ON bn.ma_dinh_danh = n.ma_dinh_danh
+    WHERE dt.ma_don_thuoc = NEW.ma_don_thuoc;
+
+    IF v_tien_su_di_ung IS NOT NULL AND LENGTH(TRIM(v_tien_su_di_ung)) > 0 THEN
+        IF (v_tien_su_di_ung ILIKE '%Penicillin%' OR v_tien_su_di_ung ILIKE '%Amoxicillin%')
+           AND (v_hoat_chat ILIKE '%Amoxicillin%' OR v_hoat_chat ILIKE '%Penicillin%') THEN
+            RAISE EXCEPTION 'CẢNH BÁO AN TOÀN DƯỢC (CDSS): Bệnh nhân [%] có tiền sử dị ứng: "%"! Hệ thống từ chối kê đơn thuốc [%] (Hoạt chất: %) để bảo vệ an toàn tính mạng bệnh nhân!',
+                v_ten_benh_nhan, v_tien_su_di_ung, v_ten_thuoc, v_hoat_chat
+                USING ERRCODE = 'check_violation';
+        END IF;
+
+        IF (v_tien_su_di_ung ILIKE '%Paracetamol%') AND (v_hoat_chat ILIKE '%Paracetamol%') THEN
+            RAISE EXCEPTION 'CẢNH BÁO AN TOÀN DƯỢC (CDSS): Bệnh nhân [%] có tiền sử dị ứng Paracetamol! Không thể kê thuốc [%]!',
+                v_ten_benh_nhan, v_ten_thuoc
+                USING ERRCODE = 'check_violation';
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_kiem_tra_di_ung ON chi_tiet_don_thuoc;
+CREATE TRIGGER trg_kiem_tra_di_ung
+    BEFORE INSERT OR UPDATE OF ma_thuoc ON chi_tiet_don_thuoc
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_kiem_tra_di_ung_thuoc();
 

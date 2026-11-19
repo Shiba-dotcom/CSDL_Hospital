@@ -190,7 +190,18 @@ CREATE TABLE IF NOT EXISTS ket_qua_dinh_luong (
     don_vi_tinh         VARCHAR(30) NOT NULL,
     chi_so_min_chuan    NUMERIC(10,3) NOT NULL,
     chi_so_max_chuan    NUMERIC(10,3) NOT NULL CHECK (chi_so_max_chuan > chi_so_min_chuan),
-    muc_do_canh_bao     canh_bao_enum NOT NULL DEFAULT 'BINH_THUONG'
+    muc_do_canh_bao     canh_bao_enum NOT NULL DEFAULT 'BINH_THUONG',
+    CONSTRAINT pk_ket_qua_dinh_luong PRIMARY KEY (ma_ket_qua),
+    CONSTRAINT uq_kq_dl_phieu_dm UNIQUE (ma_phieu_chi_dinh, ma_danh_muc_xn),
+    CONSTRAINT fk_kq_dl_phieu
+        FOREIGN KEY (ma_phieu_chi_dinh) REFERENCES phieu_chi_dinh_xet_nghiem(ma_phieu_chi_dinh)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_kq_dl_danhmuc
+        FOREIGN KEY (ma_danh_muc_xn) REFERENCES danh_muc_xet_nghiem(ma_danh_muc_xn)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_kq_dl_ktv
+        FOREIGN KEY (ma_ktv_thuc_hien) REFERENCES ky_thuat_vien(ma_nhan_vien)
+        ON DELETE SET NULL ON UPDATE CASCADE
 ) INHERITS (ket_qua_xet_nghiem);
 
 -- Lớp con 2: Kết quả Chẩn đoán hình ảnh kế thừa bảng cha
@@ -198,7 +209,18 @@ CREATE TABLE IF NOT EXISTS ket_qua_hinh_anh (
     duong_dan_tep_anh   TEXT NOT NULL CHECK (LENGTH(TRIM(duong_dan_tep_anh)) > 0),
     ky_thuat_chup       VARCHAR(100) NOT NULL,
     vung_khao_sat       VARCHAR(100) NOT NULL,
-    mo_ta_ton_thuong    TEXT NOT NULL
+    mo_ta_ton_thuong    TEXT NOT NULL,
+    CONSTRAINT pk_ket_qua_hinh_anh PRIMARY KEY (ma_ket_qua),
+    CONSTRAINT uq_kq_ha_phieu_dm UNIQUE (ma_phieu_chi_dinh, ma_danh_muc_xn),
+    CONSTRAINT fk_kq_ha_phieu
+        FOREIGN KEY (ma_phieu_chi_dinh) REFERENCES phieu_chi_dinh_xet_nghiem(ma_phieu_chi_dinh)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_kq_ha_danhmuc
+        FOREIGN KEY (ma_danh_muc_xn) REFERENCES danh_muc_xet_nghiem(ma_danh_muc_xn)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_kq_ha_ktv
+        FOREIGN KEY (ma_ktv_thuc_hien) REFERENCES ky_thuat_vien(ma_nhan_vien)
+        ON DELETE SET NULL ON UPDATE CASCADE
 ) INHERITS (ket_qua_xet_nghiem);
 
 -- Lớp con 3: Kết quả xét nghiệm Định tính & Vi sinh kế thừa bảng cha
@@ -206,8 +228,46 @@ CREATE TABLE IF NOT EXISTS ket_qua_dinh_tinh (
     ket_qua_danh_gia    danh_gia_dinh_tinh_enum NOT NULL,
     ten_chung_vi_khuan  VARCHAR(150),
     mo_ta_vi_sinh       TEXT,
-    khang_sinh_nhay_cam TEXT[] NOT NULL DEFAULT '{}'
+    khang_sinh_nhay_cam TEXT[] NOT NULL DEFAULT '{}',
+    CONSTRAINT pk_ket_qua_dinh_tinh PRIMARY KEY (ma_ket_qua),
+    CONSTRAINT uq_kq_dt_phieu_dm UNIQUE (ma_phieu_chi_dinh, ma_danh_muc_xn),
+    CONSTRAINT fk_kq_dt_phieu
+        FOREIGN KEY (ma_phieu_chi_dinh) REFERENCES phieu_chi_dinh_xet_nghiem(ma_phieu_chi_dinh)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_kq_dt_danhmuc
+        FOREIGN KEY (ma_danh_muc_xn) REFERENCES danh_muc_xet_nghiem(ma_danh_muc_xn)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_kq_dt_ktv
+        FOREIGN KEY (ma_ktv_thuc_hien) REFERENCES ky_thuat_vien(ma_nhan_vien)
+        ON DELETE SET NULL ON UPDATE CASCADE
 ) INHERITS (ket_qua_xet_nghiem);
+
+-- Bổ sung PK, UNIQUE và FK idempotent cho 3 bảng con nếu bảng đã tồn tại trước đó
+DO $$
+DECLARE
+    v_tbl TEXT;
+    v_suf TEXT;
+BEGIN
+    FOR v_tbl, v_suf IN
+        VALUES ('ket_qua_dinh_luong', 'dl'), ('ket_qua_hinh_anh', 'ha'), ('ket_qua_dinh_tinh', 'dt')
+    LOOP
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE contype = 'p' AND conrelid = v_tbl::regclass) THEN
+            EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I PRIMARY KEY (ma_ket_qua)', v_tbl, 'pk_' || v_tbl);
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_kq_' || v_suf || '_phieu_dm' AND conrelid = v_tbl::regclass) THEN
+            EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I UNIQUE (ma_phieu_chi_dinh, ma_danh_muc_xn)', v_tbl, 'uq_kq_' || v_suf || '_phieu_dm');
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_kq_' || v_suf || '_phieu' AND conrelid = v_tbl::regclass) THEN
+            EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (ma_phieu_chi_dinh) REFERENCES phieu_chi_dinh_xet_nghiem(ma_phieu_chi_dinh) ON DELETE CASCADE ON UPDATE CASCADE', v_tbl, 'fk_kq_' || v_suf || '_phieu');
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_kq_' || v_suf || '_danhmuc' AND conrelid = v_tbl::regclass) THEN
+            EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (ma_danh_muc_xn) REFERENCES danh_muc_xet_nghiem(ma_danh_muc_xn) ON DELETE RESTRICT ON UPDATE CASCADE', v_tbl, 'fk_kq_' || v_suf || '_danhmuc');
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_kq_' || v_suf || '_ktv' AND conrelid = v_tbl::regclass) THEN
+            EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (ma_ktv_thuc_hien) REFERENCES ky_thuat_vien(ma_nhan_vien) ON DELETE SET NULL ON UPDATE CASCADE', v_tbl, 'fk_kq_' || v_suf || '_ktv');
+        END IF;
+    END LOOP;
+END $$;
 
 -- ----------------------------------------------------------------------------
 -- 4. PHÂN HỆ KÊ ĐƠN & DƯỢC PHẨM

@@ -21,7 +21,7 @@ Sau quá trình 12 tuần nghiên cứu, thiết kế và hiện thực hóa đ�
 
 ### 3. Về mặt hiện thực hóa CSDL và 12 truy vấn SQL Nâng cao (Giai đoạn 3 — Tuần 6 đến 8)
 - Triển khai toàn bộ CSDL trên hệ quản trị **PostgreSQL 16** chạy môi trường Docker, phân tách DDL theo từng tầng (Types, Tables, Indexes, Triggers, Views).
-- Nạp tập dữ liệu mẫu thực tế y khoa: 66 con người, 60 bệnh nhân, 249 hồ sơ khám, 205 phiếu chỉ định, 568 kết quả xét nghiệm, 185 đơn thuốc, 460 dòng thuốc.
+- Nạp tập dữ liệu mẫu thực tế y khoa (`seed_data.sql`): 66 con người, 60 bệnh nhân, 240 hồ sơ khám, 200 phiếu chỉ định, 610 kết quả xét nghiệm (410 định lượng, 120 hình ảnh, 80 vi sinh), 180 đơn thuốc, 450 dòng thuốc *(tăng lên 243 hồ sơ, 202 phiếu chỉ định, 615 kết quả xét nghiệm, 183 đơn thuốc, 454 dòng thuốc sau khi chạy trọn bộ kịch bản kiểm thử)*.
 - Thiết kế và kiểm thử thành công trọn bộ **12 truy vấn SQL nâng cao (Q1 đến Q12)**, bao phủ đầy đủ các kỹ thuật cao cấp:
   - Correlated Subquery & Window Functions (`DENSE_RANK`, `LAG`, `OVER PARTITION`).
   - CTE Đệ quy (`WITH RECURSIVE`) phân tích lộ trình điều trị liên tục.
@@ -36,7 +36,7 @@ Sau quá trình 12 tuần nghiên cứu, thiết kế và hiện thực hóa đ�
 ### 4. Về mặt Cơ sở dữ liệu Hướng đối tượng và Thực nghiệm (Giai đoạn 4 & 5 — Tuần 9 đến 11)
 - Xây dựng mô hình hướng đối tượng - quan hệ (**ORDBMS**) gồm 3 kiểu phức hợp (`dia_chi_type`, `chi_so_sinh_ton_type`, `bang_cap_type`), hệ phân cấp 8 lớp/bảng kế thừa (`INHERITS`), và 7 phương thức thành viên đóng gói nghiệp vụ.
 - Hiện thực hóa 6 câu truy vấn **OQL chuẩn ODMG 3.0** ánh xạ trực tiếp sang PostgreSQL SQL.
-- Thực nghiệm đo kiểm hiệu năng bằng **`EXPLAIN ANALYZE`** chứng minh chỉ mục B-Tree Composite và GIN Index giúp tăng tốc truy vấn từ **12.8 đến 294.1 lần**, giảm tải I/O bộ đệm vượt trội.
+- Thực nghiệm đo kiểm hiệu năng bằng **`EXPLAIN ANALYZE`** chứng minh Partial B-Tree Index lọc thời gian giảm **76.9%** trang bộ đệm đọc và nhanh hơn **1.34 lần**, `Bitmap Index Scan` loại bỏ hoàn toàn 290 dòng dư thừa ở bảng định lượng và kiểm chứng thành công GIN Index trên `JSONB`, còn Window Function (Q3) chạy hoàn toàn trong RAM (`35kB`) chỉ mất **0.840 ms**.
 - Kiểm thử toàn diện 4 kịch bản giao dịch (**Transaction & Concurrency**): kiểm chứng tính nguyên tử All-or-Nothing khi có lỗi, cơ chế phòng chống Lost Update bằng Khóa bi quan (`SELECT FOR UPDATE`) và Khóa lạc quan (OCC qua `so_phien_ban`).
 
 ---

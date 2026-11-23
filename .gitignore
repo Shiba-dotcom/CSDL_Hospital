@@ -37,8 +37,19 @@ logs/
 temp/
 tmp/
 *.tmp
+demo_live.sql
 
 # System-generated / Agent Artifacts
 .gemini/
 .system_generated/
+
+# Reference / Sample Report Templates
+Assignment_2 (1)/
+Assignment2(1)/
+Assignment_2*/
+
+# LaTeX Overleaf & Draw.io Diagram Sources
+overleaf/
+docs/eer/eer_diagram.drawio
+docs/schemas/relational_schema.drawio
 

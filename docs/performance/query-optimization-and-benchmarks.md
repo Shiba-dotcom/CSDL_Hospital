@@ -53,7 +53,7 @@ EXPLAIN (ANALYZE, BUFFERS, COSTS, TIMING, SUMMARY) <câu_lệnh_sql>;
   FROM lich_su_chinh_sua
   WHERE du_lieu_moi ? 'gia_tri_do';
   ```
-- **Chỉ mục áp dụng:** `idx_gin_audit_moi ON lich_su_chinh_sua USING GIN (du_lieu_moi)` (định nghĩa trong [03_create_indexes.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/ddl/03_create_indexes.sql)).
+- **Chỉ mục áp dụng:** `idx_gin_audit_moi ON lich_su_chinh_sua USING GIN (du_lieu_moi)` (định nghĩa trong [03_create_indexes.sql](../../sql/ddl/03_create_indexes.sql)).
 - **Đối chiếu kết quả thực tế (4 dòng lịch sử, khớp 3 dòng):**
 
 | Thông số | Quét tuần tự (`Seq Scan`) | Dùng GIN Index (`enable_seqscan = off`) | Nhận xét chuyên môn |

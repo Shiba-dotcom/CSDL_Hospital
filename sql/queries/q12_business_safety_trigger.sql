@@ -54,6 +54,7 @@ $$ LANGUAGE plpgsql;
 
 -- Gắn trigger vào bảng chi_tiet_don_thuoc trước khi INSERT hoặc UPDATE thuốc
 DROP TRIGGER IF EXISTS trg_kiem_tra_di_ung ON chi_tiet_don_thuoc;
+
 CREATE TRIGGER trg_kiem_tra_di_ung
     BEFORE INSERT OR UPDATE OF ma_thuoc ON chi_tiet_don_thuoc
     FOR EACH ROW
@@ -97,7 +98,7 @@ BEGIN
         INSERT INTO chi_tiet_don_thuoc (ma_don_thuoc, so_thu_tu_dong, ma_thuoc, so_luong, lieu_dung_moi_lan, so_lan_uong_ngay, thoi_diem_uong, so_ngay_dung)
         VALUES (v_test_don_id, 2, 'MED_AUG1G', 14, '1 viên', 2, 'Sau ăn', 7);
     EXCEPTION WHEN check_violation THEN
-        RAISE NOTICE '==> TEST 2: TRIGGER ĐÃ BẢO VỆ THÀNH CÔNG! Chặn đứng kê thuốc Augmentin cho bệnh nhân dị ứng Penicillin!';
+        RAISE NOTICE '==> TEST 2: Chặn đứng kê thuốc Augmentin cho bệnh nhân dị ứng Penicillin!';
     END;
 
     -- Dọn dẹp dữ liệu thử nghiệm (tuân thủ quy tắc chống xóa cứng trên don_thuoc và ho_so_kham_benh)
@@ -105,5 +106,3 @@ BEGIN
     UPDATE don_thuoc SET is_deleted = TRUE WHERE ma_don_thuoc = v_test_don_id;
     UPDATE ho_so_kham_benh SET is_deleted = TRUE WHERE ma_ho_so = v_hs_id;
 END $$;
-
-

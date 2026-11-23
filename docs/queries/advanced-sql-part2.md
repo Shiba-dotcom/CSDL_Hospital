@@ -8,19 +8,19 @@
 
 | Mã | Tên nghiệp vụ | Kỹ thuật SQL Nâng cao áp dụng | Tệp mã nguồn |
 |:---:|---|---|---|
-| **Q7** | Đóng gói toàn bộ quy trình khám ngoại trú (Khám $\rightarrow$ Chỉ định CLS $\rightarrow$ Đơn thuốc) trong 1 Transaction | **Stored Procedure (PL/pgSQL)** với tham số `INOUT`, duyệt mảng `FOREACH ... IN ARRAY`, bóc tách dữ liệu JSONB `jsonb_to_recordset()`, Transaction Control | [q07_stored_procedure_workflow.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q07_stored_procedure_workflow.sql) |
-| **Q8** | Báo cáo phân tích doanh thu và lượt khám linh hoạt theo nhiều chiều gom nhóm | **Dynamic SQL (SQL Động)** với hàm `EXECUTE FORMAT`, tham số an toàn `%s`, `%L`, cơ chế chống SQL Injection, trả về bảng `RETURNS TABLE` | [q08_dynamic_sql_reporting.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q08_dynamic_sql_reporting.sql) |
-| **Q9** | Chức năng tìm kiếm hồ sơ bệnh nhân thông minh đa tiêu chí (Fuzzy search, lọc độ tuổi, nhóm máu) | **Stored Function trả về kiểu bảng (`RETURNS TABLE`)**, tính tuổi dẫn xuất, tìm kiếm trên mảng `ANY(so_dien_thoai)`, tổng hợp lịch sử khám | [q09_table_function_search.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q09_table_function_search.sql) |
-| **Q10** | Thanh tra y tế truy vết và phân tích biến động sửa đổi kết quả xét nghiệm | **JSONB Query chuyên sâu**, toán tử `->>`, `->`, `?` (key exists), ép kiểu số học trực tiếp từ JSONB, tính độ chênh lệch (Delta) | [q10_jsonb_audit_query.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q10_jsonb_audit_query.sql) |
-| **Q11** | Bảng tổng hợp chéo ma trận phân bổ các nhóm dịch vụ cận lâm sàng của bác sĩ | **PIVOT / CROSSTAB** hiện đại sử dụng mệnh đề chuẩn ISO `FILTER (WHERE ...)`, tính tỷ lệ phần trăm phân bổ | [q11_pivot_crosstab.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q11_pivot_crosstab.sql) |
-| **Q12** | Hệ thống Hỗ trợ Ra Quyết định Lâm sàng (CDSS) tự động cảnh báo dị ứng thuốc | **Cross-table Trigger & Stored Function** kiểm tra xung đột đa bảng (`ChiTietDonThuoc` $\rightarrow$ `DonThuoc` $\rightarrow$ `HoSo` $\rightarrow$ `BenhNhan`), chặn `check_violation` khi phát hiện rủi ro | [q12_business_safety_trigger.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q12_business_safety_trigger.sql) |
+| **Q7** | Đóng gói toàn bộ quy trình khám ngoại trú (Khám $\rightarrow$ Chỉ định CLS $\rightarrow$ Đơn thuốc) trong 1 Transaction | **Stored Procedure (PL/pgSQL)** với tham số `INOUT`, duyệt mảng `FOREACH ... IN ARRAY`, bóc tách dữ liệu JSONB `jsonb_to_recordset()`, Transaction Control | [q07_stored_procedure_workflow.sql](../../sql/queries/q07_stored_procedure_workflow.sql) |
+| **Q8** | Báo cáo phân tích doanh thu và lượt khám linh hoạt theo nhiều chiều gom nhóm | **Dynamic SQL (SQL Động)** với hàm `EXECUTE FORMAT`, tham số an toàn `%s`, `%L`, cơ chế chống SQL Injection, trả về bảng `RETURNS TABLE` | [q08_dynamic_sql_reporting.sql](../../sql/queries/q08_dynamic_sql_reporting.sql) |
+| **Q9** | Chức năng tìm kiếm hồ sơ bệnh nhân thông minh đa tiêu chí (Fuzzy search, lọc độ tuổi, nhóm máu) | **Stored Function trả về kiểu bảng (`RETURNS TABLE`)**, tính tuổi dẫn xuất, tìm kiếm trên mảng `ANY(so_dien_thoai)`, tổng hợp lịch sử khám | [q09_table_function_search.sql](../../sql/queries/q09_table_function_search.sql) |
+| **Q10** | Thanh tra y tế truy vết và phân tích biến động sửa đổi kết quả xét nghiệm | **JSONB Query chuyên sâu**, toán tử `->>`, `->`, `?` (key exists), ép kiểu số học trực tiếp từ JSONB, tính độ chênh lệch (Delta) | [q10_jsonb_audit_query.sql](../../sql/queries/q10_jsonb_audit_query.sql) |
+| **Q11** | Bảng tổng hợp chéo ma trận phân bổ các nhóm dịch vụ cận lâm sàng của bác sĩ | **PIVOT / CROSSTAB** hiện đại sử dụng mệnh đề chuẩn ISO `FILTER (WHERE ...)`, tính tỷ lệ phần trăm phân bổ | [q11_pivot_crosstab.sql](../../sql/queries/q11_pivot_crosstab.sql) |
+| **Q12** | Hệ thống Hỗ trợ Ra Quyết định Lâm sàng (CDSS) tự động cảnh báo dị ứng thuốc | **Cross-table Trigger & Stored Function** kiểm tra xung đột đa bảng (`ChiTietDonThuoc` $\rightarrow$ `DonThuoc` $\rightarrow$ `HoSo` $\rightarrow$ `BenhNhan`), chặn `check_violation` khi phát hiện rủi ro | [q12_business_safety_trigger.sql](../../sql/queries/q12_business_safety_trigger.sql) |
 
 ---
 
 ## 2. CHI TIẾT TỪNG TRUY VẤN & KẾT QUẢ THỰC THI THỰC TẾ
 
 ### 2.1. Truy vấn Q7: Stored Procedure quy trình khám bệnh toàn diện trong 1 Transaction
-- **Mã nguồn:** [q07_stored_procedure_workflow.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q07_stored_procedure_workflow.sql)
+- **Mã nguồn:** [q07_stored_procedure_workflow.sql](../../sql/queries/q07_stored_procedure_workflow.sql)
 - **Ý nghĩa nghiệp vụ:** 
   Khi bác sĩ kết thúc buổi khám bệnh, hệ thống cần thực hiện đồng bộ 3 hành động:
   1. Ghi nhận hồ sơ khám bệnh lâm sàng kèm các dấu hiệu sinh tồn (mạch, huyết áp, nhiệt độ, chiều cao, cân nặng).
@@ -44,7 +44,7 @@ DO
 ---
 
 ### 2.2. Truy vấn Q8: Dynamic SQL (SQL Động với cú pháp EXECUTE FORMAT)
-- **Mã nguồn:** [q08_dynamic_sql_reporting.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q08_dynamic_sql_reporting.sql)
+- **Mã nguồn:** [q08_dynamic_sql_reporting.sql](../../sql/queries/q08_dynamic_sql_reporting.sql)
 - **Ý nghĩa nghiệp vụ:** 
   Báo cáo thống kê hiệu suất khám bệnh và doanh thu tiền thuốc phục vụ Ban Quản lý bệnh viện. Người dùng báo cáo có thể chọn linh hoạt trục gom nhóm dữ liệu theo:
   - Từng Bác sĩ (`'BAC_SI'`)
@@ -77,7 +77,7 @@ DO
 ---
 
 ### 2.3. Truy vấn Q9: Stored Function trả về kiểu bảng (RETURNS TABLE)
-- **Mã nguồn:** [q09_table_function_search.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q09_table_function_search.sql)
+- **Mã nguồn:** [q09_table_function_search.sql](../../sql/queries/q09_table_function_search.sql)
 - **Ý nghĩa nghiệp vụ:** 
   Cung cấp API tìm kiếm bệnh nhân tốc độ cao cho bộ phận tiếp đón và điều dưỡng. Hỗ trợ tìm kiếm mờ (Fuzzy search) theo tên, mã bệnh nhân, căn cước công dân hoặc số điện thoại (trong mảng đa trị), đồng thời kết hợp bộ lọc phân tầng theo nhóm máu và khoảng độ tuổi lâm sàng.
 - **Điểm sáng kỹ thuật:**
@@ -98,7 +98,7 @@ DO
 ---
 
 ### 2.4. Truy vấn Q10: Phân tích JSONB trên bảng Nhật ký kiểm toán (Audit Trail)
-- **Mã nguồn:** [q10_jsonb_audit_query.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q10_jsonb_audit_query.sql)
+- **Mã nguồn:** [q10_jsonb_audit_query.sql](../../sql/queries/q10_jsonb_audit_query.sql)
 - **Ý nghĩa nghiệp vụ:** 
   Phục vụ công tác thanh tra y tế và quản lý chất lượng phòng xét nghiệm (ISO 15189): Khi kỹ thuật viên chỉnh sửa kết quả xét nghiệm định lượng (ví dụ hiệu chuẩn lại máy phân tích tự động hay pha loãng mẫu bệnh phẩm), truy vấn bóc tách dữ liệu snapshot trước và sau khi sửa, tính toán biên độ chênh lệch và hiển thị sự thay đổi nhãn cảnh báo lâm sàng.
 - **Điểm sáng kỹ thuật:**
@@ -121,7 +121,7 @@ DO
 ---
 
 ### 2.5. Truy vấn Q11: Bảng tổng hợp chéo Ma trận 2 chiều (PIVOT / CROSSTAB)
-- **Mã nguồn:** [q11_pivot_crosstab.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q11_pivot_crosstab.sql)
+- **Mã nguồn:** [q11_pivot_crosstab.sql](../../sql/queries/q11_pivot_crosstab.sql)
 - **Ý nghĩa nghiệp vụ:** 
   Ban Giám đốc phân tích thói quen và xu hướng chỉ định cận lâm sàng của các bác sĩ. Xoay trục nhóm xét nghiệm (vốn nằm dọc theo dòng) thành 5 cột ngang tương ứng với 5 nhóm nghiệp vụ (`SINH_HOA`, `HUYET_HOC`, `CHIEU_CHUP`, `THAM_DO_CN`, `VI_SINH`), đồng thời tính tỷ trọng phần trăm chỉ định chiếu chụp hình ảnh để kiểm soát việc lạm dụng dịch vụ kỹ thuật cao.
 - **Điểm sáng kỹ thuật:**
@@ -140,7 +140,7 @@ DO
 ---
 
 ### 2.6. Truy vấn Q12: Function & Trigger Hỗ trợ Quyết định Lâm sàng (CDSS)
-- **Mã nguồn:** [q12_business_safety_trigger.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/queries/q12_business_safety_trigger.sql)
+- **Mã nguồn:** [q12_business_safety_trigger.sql](../../sql/queries/q12_business_safety_trigger.sql)
 - **Ý nghĩa nghiệp vụ:** 
   Tính năng bảo vệ sinh mạng bệnh nhân (Clinical Decision Support System - CDSS). Ngay khi bác sĩ thao tác kê đơn thuốc trên giao diện hoặc qua API, trigger sẽ lập tức kiểm tra chéo tiền sử dị ứng của bệnh nhân nhận thuốc. Nếu phát hiện bác sĩ kê nhóm thuốc xung đột (ví dụ: bệnh nhân dị ứng Penicillin nhưng kê Augmentin/Amoxicillin), CSDL sẽ ném lỗi ngoại lệ và từ chối ghi nhận dòng thuốc đó.
 - **Điểm sáng kỹ thuật:**
@@ -168,5 +168,5 @@ HOÀN TẤT KIỂM THỬ THÀNH CÔNG 100% TOÀN BỘ 12 TRUY VẤN SQL NÂNG CA
 | **Số lượng truy vấn** | Tối thiểu 10 – 12 câu | Đã hoàn thành trọn vẹn **12 câu (Q1 – Q12)** | **VƯỢT CHỈ TIÊU (100%)** |
 | **Kỹ thuật bắt buộc** | Join nhiều bảng, Subquery, Window Function, CTE, Division, Trigger, Procedure | Đầy đủ 100% các kỹ thuật: Correlated Subquery, Window Functions (`LAG`, `OVER`), Recursive CTE, Double NOT EXISTS Division, Stored Procedure with In/Out & JSONB, Dynamic SQL với `EXECUTE FORMAT`, Stored Table Function, JSONB Operators, Modern PIVOT (`FILTER WHERE`), và Cross-table CDSS Safety Trigger | **XUẤT SẮC** |
 | **Kiểm thử trên CSDL** | Chạy kiểm thử thành công trên hệ CSDL thực tế | 100% các script chạy thông suốt trên PostgreSQL 16 Docker | **ĐẠT** |
-| **Chất lượng báo cáo** | Có phân tích ý nghĩa nghiệp vụ, giải thích kỹ thuật và chụp ảnh/log kết quả | Báo cáo chi tiết Phần 1 ([advanced-sql-part1.md](file:///a:/VisualStudioCode/CSDL_BenhVien/docs/queries/advanced-sql-part1.md)) & Phần 2 ([advanced-sql-part2.md](file:///a:/VisualStudioCode/CSDL_BenhVien/docs/queries/advanced-sql-part2.md)) | **ĐẠT** |
+| **Chất lượng báo cáo** | Có phân tích ý nghĩa nghiệp vụ, giải thích kỹ thuật và chụp ảnh/log kết quả | Báo cáo chi tiết Phần 1 ([advanced-sql-part1.md](advanced-sql-part1.md)) & Phần 2 ([advanced-sql-part2.md](advanced-sql-part2.md)) | **ĐẠT** |
 

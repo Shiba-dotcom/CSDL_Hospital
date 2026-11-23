@@ -62,7 +62,7 @@ Nhóm tác giả đã tiến hành thực nghiệm đo kiểm hiệu năng trên
 *(Lưu ý: Trên dữ liệu mẫu nằm gọn trong 1–10 trang nhớ, ở B1 & B2 phải tắt `enable_seqscan` tạm thời để kiểm chứng kế hoạch Index hoạt động, không tắt trên Production).*
 
 ### 8.3.2. Đánh giá kiểm thử toàn vẹn hệ thống (Health Check)
-Kết quả chạy script kiểm thử độc lập [verify_end_to_end.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/tests/verify_end_to_end.sql) sau trọn bộ kịch bản kiểm thử xác nhận:
+Kết quả chạy script kiểm thử độc lập [verify_end_to_end.sql](../tests/verify_end_to_end.sql) sau trọn bộ kịch bản kiểm thử xác nhận:
 1. **Dữ liệu phân bổ đúng chuẩn:**
    - 66 Người dùng $\rightarrow$ 60 Bệnh nhân, 6 Nhân viên y tế (3 Bác sĩ, 2 Kỹ thuật viên, 1 Tiếp đón).
    - 243 Hồ sơ khám bệnh ngoại trú (từ 240 hồ sơ seed gốc + 3 hồ sơ sinh thêm khi chạy Q7, Q12 và Transaction).

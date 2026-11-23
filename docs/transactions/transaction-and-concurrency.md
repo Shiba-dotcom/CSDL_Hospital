@@ -28,7 +28,7 @@ Mỗi chu trình nghiệp vụ y tế (như quy trình khám bệnh ngoại trú
 ## 3. THỰC NGHIỆM CHI TIẾT 4 KỊCH BẢN GIAO DỊCH
 
 ### 3.1. Kịch bản 1: Giao dịch thành công hoàn toàn (Happy Path)
-- **Tệp mã nguồn:** [01_scenario_happy_path.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/transactions/01_scenario_happy_path.sql)
+- **Tệp mã nguồn:** [01_scenario_happy_path.sql](../../sql/transactions/01_scenario_happy_path.sql)
 - **Kịch bản nghiệp vụ:** Bác sĩ hoàn tất khám lâm sàng cho bệnh nhân `BN-000002`:
   1. Ghi nhận `ho_so_kham_benh` kèm chỉ số sinh tồn (Trigger tự động tính $BMI = 23.53$).
   2. Tạo `phieu_chi_dinh_xet_nghiem` ở trạng thái `DA_CO_KET_QUA`.
@@ -52,7 +52,7 @@ DO
 ---
 
 ### 3.2. Kịch bản 2: Lỗi giữa chừng & ROLLBACK bảo vệ tính nguyên tử (Atomicity)
-- **Tệp mã nguồn:** [02_scenario_rollback_atomicity.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/transactions/02_scenario_rollback_atomicity.sql)
+- **Tệp mã nguồn:** [02_scenario_rollback_atomicity.sql](../../sql/transactions/02_scenario_rollback_atomicity.sql)
 - **Kịch bản sự cố:**
   1. Giao dịch khởi tạo `ho_so_kham_benh` và `phieu_chi_dinh_xet_nghiem` tạm thời thành công.
   2. Tại bước 3, cố tình chèn bản ghi kết quả xét nghiệm định lượng có `chi_so_min_chuan = 10.0` lớn hơn `chi_so_max_chuan = 2.0` $\rightarrow$ Vi phạm ràng buộc `CHECK (chi_so_max_chuan > chi_so_min_chuan)`.
@@ -82,7 +82,7 @@ so_ho_so_rac_mo_coi: 0
 ---
 
 ### 3.3. Kịch bản 3: Phòng chống xung đột cập nhật (Lost Update & Concurrency Control)
-- **Tệp mã nguồn:** [03_scenario_concurrency_lost_update.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/transactions/03_scenario_concurrency_lost_update.sql)
+- **Tệp mã nguồn:** [03_scenario_concurrency_lost_update.sql](../../sql/transactions/03_scenario_concurrency_lost_update.sql)
 - **Vấn đề tranh chấp:** Hai kỹ thuật viên cùng mở màn hình đính chính kết quả xét nghiệm Glucose (`ma_ket_qua = 1`). Nếu cùng ghi đè, thao tác của một kỹ thuật viên sẽ bị mất (*Lost Update*).
 - **Hai cơ chế giải quyết triệt để:**
   1. **Khóa bi quan (Pessimistic Locking):** Sử dụng `SELECT ... FOR UPDATE` để chiếm giữ khóa độc quyền trên dòng (`Exclusive Row Lock`). Phiên đồng thời sẽ bị chặn lại hoặc từ chối ngay lập tức (`NOWAIT`) cho đến khi phiên đầu tiên giải phóng khóa.
@@ -108,7 +108,7 @@ psql:sql/transactions/03_scenario_concurrency_lost_update.sql:75: WARNING:  Hệ
 ---
 
 ### 3.4. Kịch bản 4: Đối chiếu cấp độ cô lập (Isolation Levels Simulation)
-- **Tệp mã nguồn:** [04_scenario_isolation_levels.sql](file:///a:/VisualStudioCode/CSDL_BenhVien/sql/transactions/04_scenario_isolation_levels.sql)
+- **Tệp mã nguồn:** [04_scenario_isolation_levels.sql](../../sql/transactions/04_scenario_isolation_levels.sql)
 - **Thử nghiệm:**
   - Mô phỏng ứng xử của cấp độ `REPEATABLE READ` khi có cập nhật tương tranh đồng thời: PostgreSQL phát hiện xung đột và ném ngoại lệ chuẩn `serialization_failure (SQLSTATE 40001)`.
   - Ứng dụng y tế được cấu hình tự động bắt mã lỗi này và thực hiện cơ chế Retry giao dịch (Thử lại) một cách trong suốt với người dùng.
